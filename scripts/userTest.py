@@ -6,10 +6,10 @@ url = 'http://localhost:8080/'
 body = """
     mutation {
         createUser(username: "user1", password: "123", rol: ADMIN) {
-            id,
-            username,
-            password,
-            rol,
+            id
+            username
+            password
+            rol
             operations{
                 id
             }
@@ -42,11 +42,11 @@ jwt = response.json()['data']['login']
 body = """
     query {
         users {
-            id,
-            username,
-            password,
-            rol,
-            operations{
+            id
+            username
+            password
+            rol
+            operations {
                 id
             }
         }
@@ -62,11 +62,11 @@ if response.status_code == 200:
 body = """
     query {
         userById(id: "%s") {
-            id,
-            username,
-            password,
-            rol,
-            operations{
+            id
+            username
+            password
+            rol
+            operations {
                 id
             }
         }
@@ -82,16 +82,16 @@ if response.status_code == 200:
 body = """
     query {
         userByToken {
-            id,
-            username,
-            password,
-            rol,
-            operations{
-                id,
-                description,
-                date,
-                amount,
-                category,
+            id
+            username
+            password
+            rol
+            operations {
+                id
+                description
+                date
+                amount
+                category
                 userId
             }
         }
@@ -106,16 +106,16 @@ if response.status_code == 200:
 # Update user
 body = """
     mutation {
-        updateUser(id: "%s", password: "1234"){
-            id,
-            username,
-            password,
-            rol,
-            operations{
-                id,
-                description,
-                date,
-                amount,
+        updateUser(id: "%s", password: "1234") {
+            id
+            username
+            password
+            rol
+            operations {
+                id
+                description
+                date
+                amount
                 category
             }
         }
