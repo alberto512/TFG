@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  backend:
+    env_file: .env
+    depends_on:
+      - mongo
+    build:
+      context: ./backend
+    container_name: backend
+    hostname: backend
+    ports:
+      - 8080:8080
+
+  mongo:
+    env_file: .env
+    image: mongo:latest
+    container_name: mongodb
+    hostname: db
+    ports:
+      - 27017:27017

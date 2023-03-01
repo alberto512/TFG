@@ -1,0 +1,57 @@
+type Mutation {
+  login(username: String!, password: String!): String!
+  refreshToken(token: String!): String!
+  createUser(username: String!, password: String!, rol: Rol!): User!
+  updateUser(id: ID!, password: String!): User!
+  deleteUser(id: ID!): String!
+  createOperation(input: NewOperation!): Operation!
+  updateOperation(input: UpdateOperation): Operation!
+  deleteOperation(id: ID!): String!
+}
+
+type Query {
+  users: [User!]!
+  userById(id: ID!): User!
+  userByToken: User!
+  operations: [Operation!]!
+  operationById(id: ID!): Operation!
+  operationsByDate(initDate: Int!, endDate: Int!): [Operation!]!
+  operationsByCategory(category: String!): [Operation!]!
+}
+
+enum Rol {
+  ADMIN
+  USER
+}
+
+type User {
+  id: ID!
+  username: String!
+  password: String!
+  rol: Rol!
+  operations: [Operation!]!
+}
+
+type Operation {
+  id: ID!
+  description: String!
+  date: Int!
+  amount: Float!
+  category: String!
+  userId: ID!
+}
+
+input NewOperation {
+  description: String!
+  date: Int!
+  amount: Float!
+  category: String!
+}
+
+input UpdateOperation {
+  id: ID!
+  description: String
+  date: Int
+  amount: Float
+  category: String
+}
