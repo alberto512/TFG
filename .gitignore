@@ -1,1 +1,7 @@
 .env
+# Local Netlify folder
+.netlify
+
+# React app
+node_modules/
+build/

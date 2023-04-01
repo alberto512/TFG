@@ -12,6 +12,7 @@ import (
 	"tfg/internal/jwt"
 	"tfg/internal/middleware"
 	"tfg/internal/operations"
+	"tfg/internal/santander"
 	"tfg/internal/users"
 	"time"
 )
@@ -80,120 +81,6 @@ func (r *mutationResolver) CreateUser(ctx context.Context, username string, pass
 	err := user.Create()
 	if err != nil {
 		log.Printf("Error: Create user")
-		return &model.User{}, err
-	}
-
-	// Parse to model.User
-	graphqlUser := &model.User{
-		ID:       user.ID,
-		Username: user.Username,
-		Password: user.Password,
-		Rol:      user.Rol,
-	}
-
-	return graphqlUser, nil
-}
-
-// Users is the resolver for the users field.
-func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
-	// Set variables
-	var graphqlUsers []*model.User
-	var userAuth *users.User
-
-	log.Printf("Route: Users")
-
-	// Get user from context
-	if userAuth = middleware.ForContext(ctx); userAuth == nil {
-		log.Printf("Error: Access denied")
-		return graphqlUsers, fmt.Errorf("access denied")
-	}
-
-	// Only allow operation if is an admin
-	if userAuth.Rol != model.RolAdmin {
-		log.Printf("Error: Access denied")
-		return graphqlUsers, fmt.Errorf("access denied")
-	}
-
-	// Get all users
-	dbUsers, err := users.GetAllUsers()
-	if err != nil {
-		log.Printf("Error: Get all users")
-		return graphqlUsers, err
-	}
-
-	// Parse al users to model.User
-	for _, user := range dbUsers {
-		graphqlUsers = append(graphqlUsers, &model.User{
-			ID:       user.ID,
-			Username: user.Username,
-			Password: user.Password,
-			Rol:      user.Rol,
-		})
-	}
-
-	return graphqlUsers, nil
-}
-
-// UserByID is the resolver for the userById field.
-func (r *queryResolver) UserByID(ctx context.Context, id string) (*model.User, error) {
-	// Set variables
-	var user users.User
-	var userAuth *users.User
-
-	log.Printf("Route: UserByID")
-
-	// Get user from context
-	if userAuth = middleware.ForContext(ctx); userAuth == nil {
-		log.Printf("Error: Access denied")
-		return &model.User{}, fmt.Errorf("access denied")
-	}
-
-	// Only allow operation if is an admin
-	if userAuth.Rol != model.RolAdmin {
-		log.Printf("Error: Access denied")
-		return &model.User{}, fmt.Errorf("access denied")
-	}
-
-	user.ID = id
-
-	// Get user
-	err := user.GetUserById()
-	if err != nil {
-		log.Printf("Error: Get user")
-		return &model.User{}, err
-	}
-
-	// Parse to model.User
-	graphqlUser := &model.User{
-		ID:       user.ID,
-		Username: user.Username,
-		Password: user.Password,
-		Rol:      user.Rol,
-	}
-
-	return graphqlUser, nil
-}
-
-// UserByToken is the resolver for the userByToken field.
-func (r *queryResolver) UserByToken(ctx context.Context) (*model.User, error) {
-	// Set variables
-	var user users.User
-	var userAuth *users.User
-
-	log.Printf("Route: UserByToken")
-
-	// Get user from context
-	if userAuth = middleware.ForContext(ctx); userAuth == nil {
-		log.Printf("Error: Access denied")
-		return &model.User{}, fmt.Errorf("access denied")
-	}
-
-	user.ID = userAuth.ID
-
-	// Get user
-	err := user.GetUserById()
-	if err != nil {
-		log.Printf("Error: Get user")
 		return &model.User{}, err
 	}
 
@@ -321,6 +208,208 @@ func (r *mutationResolver) CreateOperation(ctx context.Context, input model.NewO
 	return graphqlOperation, nil
 }
 
+// UpdateOperation is the resolver for the updateOperation field.
+func (r *mutationResolver) UpdateOperation(ctx context.Context, input *model.UpdateOperation) (*model.Operation, error) {
+	// Set variables
+	var userAuth *users.User
+	var operation operations.Operation
+	var userId string
+
+	log.Printf("Route: UpdateOperation")
+
+	// Get user from context
+	if userAuth = middleware.ForContext(ctx); userAuth == nil {
+		log.Printf("Error: Access denied")
+		return &model.Operation{}, fmt.Errorf("access denied")
+	}
+
+	// Set fields. Admin can update any operation and user can only update his own operations
+	if userAuth.Rol == model.RolAdmin {
+		userId = ""
+	} else {
+		userId = userAuth.ID
+	}
+	operation.ID = input.ID
+
+	// Parse dates
+	var date *time.Time
+	if input.Date != nil {
+		dateLocal := time.UnixMilli(int64(*input.Date))
+		date = &dateLocal
+	} else {
+		date = nil
+	}
+
+	// Update operation in db
+	err := operation.Update(userId, input.Description, date, input.Amount, input.Category)
+	if err != nil {
+		log.Printf("Error: Update operation")
+		return &model.Operation{}, err
+	}
+
+	// Parse to model.Operation
+	graphqlOperation := &model.Operation{
+		ID:          operation.ID,
+		Description: operation.Description,
+		Date:        int(operation.Date.UnixMilli()),
+		Amount:      operation.Amount,
+		Category:    operation.Category,
+		UserID:      operation.UserID,
+	}
+
+	return graphqlOperation, nil
+}
+
+// DeleteOperation is the resolver for the deleteOperation field.
+func (r *mutationResolver) DeleteOperation(ctx context.Context, id string) (string, error) {
+	// Set variables
+	var userAuth *users.User
+	var userId string
+
+	log.Printf("Route: DeleteOperation")
+
+	// Get user from context
+	if userAuth = middleware.ForContext(ctx); userAuth == nil {
+		log.Printf("Error: Access denied")
+		return "Error", fmt.Errorf("access denied")
+	}
+
+	// Set fields. Admin can delete any operation and user can only delete his own operations
+	if userAuth.Rol == model.RolAdmin {
+		userId = ""
+	} else {
+		userId = userAuth.ID
+	}
+
+	// Delete operation in db
+	correct, err := operations.Delete(id, userId)
+	if err != nil || !correct {
+		log.Printf("Error: Delete operation")
+		return "Error", err
+	}
+
+	return "Deletion success", nil
+}
+
+// GetAuthURL is the resolver for the getAuthUrl field.
+func (r *queryResolver) GetAuthURL(ctx context.Context, code string) (string, error) {
+	return santander.AuthorizeOpenBusiness(code)
+}
+
+// Users is the resolver for the users field.
+func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
+	// Set variables
+	var graphqlUsers []*model.User
+	var userAuth *users.User
+
+	log.Printf("Route: Users")
+
+	// Get user from context
+	if userAuth = middleware.ForContext(ctx); userAuth == nil {
+		log.Printf("Error: Access denied")
+		return graphqlUsers, fmt.Errorf("access denied")
+	}
+
+	// Only allow operation if is an admin
+	if userAuth.Rol != model.RolAdmin {
+		log.Printf("Error: Access denied")
+		return graphqlUsers, fmt.Errorf("access denied")
+	}
+
+	// Get all users
+	dbUsers, err := users.GetAllUsers()
+	if err != nil {
+		log.Printf("Error: Get all users")
+		return graphqlUsers, err
+	}
+
+	// Parse al users to model.User
+	for _, user := range dbUsers {
+		graphqlUsers = append(graphqlUsers, &model.User{
+			ID:       user.ID,
+			Username: user.Username,
+			Password: user.Password,
+			Rol:      user.Rol,
+		})
+	}
+
+	return graphqlUsers, nil
+}
+
+// UserByID is the resolver for the userById field.
+func (r *queryResolver) UserByID(ctx context.Context, id string) (*model.User, error) {
+	// Set variables
+	var user users.User
+	var userAuth *users.User
+
+	log.Printf("Route: UserByID")
+
+	// Get user from context
+	if userAuth = middleware.ForContext(ctx); userAuth == nil {
+		log.Printf("Error: Access denied")
+		return &model.User{}, fmt.Errorf("access denied")
+	}
+
+	// Only allow operation if is an admin
+	if userAuth.Rol != model.RolAdmin {
+		log.Printf("Error: Access denied")
+		return &model.User{}, fmt.Errorf("access denied")
+	}
+
+	user.ID = id
+
+	// Get user
+	err := user.GetUserById()
+	if err != nil {
+		log.Printf("Error: Get user")
+		return &model.User{}, err
+	}
+
+	// Parse to model.User
+	graphqlUser := &model.User{
+		ID:       user.ID,
+		Username: user.Username,
+		Password: user.Password,
+		Rol:      user.Rol,
+	}
+
+	return graphqlUser, nil
+}
+
+// UserByToken is the resolver for the userByToken field.
+func (r *queryResolver) UserByToken(ctx context.Context) (*model.User, error) {
+	// Set variables
+	var user users.User
+	var userAuth *users.User
+
+	log.Printf("Route: UserByToken")
+
+	// Get user from context
+	if userAuth = middleware.ForContext(ctx); userAuth == nil {
+		log.Printf("Error: Access denied")
+		return &model.User{}, fmt.Errorf("access denied")
+	}
+
+	user.ID = userAuth.ID
+
+	// Get user
+	err := user.GetUserById()
+	if err != nil {
+		log.Printf("Error: Get user")
+		return &model.User{}, err
+	}
+
+	// Parse to model.User
+	graphqlUser := &model.User{
+		ID:       user.ID,
+		Username: user.Username,
+		Password: user.Password,
+		Rol:      user.Rol,
+	}
+
+	return graphqlUser, nil
+}
+
 // Operations is the resolver for the operations field.
 func (r *queryResolver) Operations(ctx context.Context) ([]*model.Operation, error) {
 	// Set variable
@@ -364,6 +453,49 @@ func (r *queryResolver) Operations(ctx context.Context) ([]*model.Operation, err
 	}
 
 	return graphqlOperations, nil
+}
+
+// OperationByID is the resolver for the operationById field.
+func (r *queryResolver) OperationByID(ctx context.Context, id string) (*model.Operation, error) {
+	// Set variables
+	var userAuth *users.User
+	var operation operations.Operation
+	var userId string
+
+	log.Printf("Route: OperationByID")
+
+	// Get user from context
+	if userAuth = middleware.ForContext(ctx); userAuth == nil {
+		log.Printf("Error: Access denied")
+		return &model.Operation{}, fmt.Errorf("access denied")
+	}
+
+	// Set fields. Admin can get any operation and user can only get his own operations
+	if userAuth.Rol == model.RolAdmin {
+		userId = ""
+	} else {
+		userId = userAuth.ID
+	}
+	operation.ID = id
+
+	// Get operation in db
+	err := operation.GetOperationById(userId)
+	if err != nil {
+		log.Printf("Error: Get operation")
+		return &model.Operation{}, err
+	}
+
+	// Parse to model.Operation
+	graphqlOperation := &model.Operation{
+		ID:          operation.ID,
+		Description: operation.Description,
+		Date:        int(operation.Date.UnixMilli()),
+		Amount:      operation.Amount,
+		Category:    operation.Category,
+		UserID:      operation.UserID,
+	}
+
+	return graphqlOperation, nil
 }
 
 // OperationsByDate is the resolver for the operationsByDate field.
@@ -458,132 +590,6 @@ func (r *queryResolver) OperationsByCategory(ctx context.Context, category strin
 	}
 
 	return graphqlOperations, nil
-}
-
-// OperationByID is the resolver for the operationById field.
-func (r *queryResolver) OperationByID(ctx context.Context, id string) (*model.Operation, error) {
-	// Set variables
-	var userAuth *users.User
-	var operation operations.Operation
-	var userId string
-
-	log.Printf("Route: OperationByID")
-
-	// Get user from context
-	if userAuth = middleware.ForContext(ctx); userAuth == nil {
-		log.Printf("Error: Access denied")
-		return &model.Operation{}, fmt.Errorf("access denied")
-	}
-
-	// Set fields. Admin can get any operation and user can only get his own operations
-	if userAuth.Rol == model.RolAdmin {
-		userId = ""
-	} else {
-		userId = userAuth.ID
-	}
-	operation.ID = id
-
-	// Get operation in db
-	err := operation.GetOperationById(userId)
-	if err != nil {
-		log.Printf("Error: Get operation")
-		return &model.Operation{}, err
-	}
-
-	// Parse to model.Operation
-	graphqlOperation := &model.Operation{
-		ID:          operation.ID,
-		Description: operation.Description,
-		Date:        int(operation.Date.UnixMilli()),
-		Amount:      operation.Amount,
-		Category:    operation.Category,
-		UserID:      operation.UserID,
-	}
-
-	return graphqlOperation, nil
-}
-
-// UpdateOperation is the resolver for the updateOperation field.
-func (r *mutationResolver) UpdateOperation(ctx context.Context, input *model.UpdateOperation) (*model.Operation, error) {
-	// Set variables
-	var userAuth *users.User
-	var operation operations.Operation
-	var userId string
-
-	log.Printf("Route: UpdateOperation")
-
-	// Get user from context
-	if userAuth = middleware.ForContext(ctx); userAuth == nil {
-		log.Printf("Error: Access denied")
-		return &model.Operation{}, fmt.Errorf("access denied")
-	}
-
-	// Set fields. Admin can update any operation and user can only update his own operations
-	if userAuth.Rol == model.RolAdmin {
-		userId = ""
-	} else {
-		userId = userAuth.ID
-	}
-	operation.ID = input.ID
-
-	// Parse dates
-	var date *time.Time
-	if input.Date != nil {
-		dateLocal := time.UnixMilli(int64(*input.Date))
-		date = &dateLocal
-	} else {
-		date = nil
-	}
-
-	// Update operation in db
-	err := operation.Update(userId, input.Description, date, input.Amount, input.Category)
-	if err != nil {
-		log.Printf("Error: Update operation")
-		return &model.Operation{}, err
-	}
-
-	// Parse to model.Operation
-	graphqlOperation := &model.Operation{
-		ID:          operation.ID,
-		Description: operation.Description,
-		Date:        int(operation.Date.UnixMilli()),
-		Amount:      operation.Amount,
-		Category:    operation.Category,
-		UserID:      operation.UserID,
-	}
-
-	return graphqlOperation, nil
-}
-
-// DeleteOperation is the resolver for the deleteOperation field.
-func (r *mutationResolver) DeleteOperation(ctx context.Context, id string) (string, error) {
-	// Set variables
-	var userAuth *users.User
-	var userId string
-
-	log.Printf("Route: DeleteOperation")
-
-	// Get user from context
-	if userAuth = middleware.ForContext(ctx); userAuth == nil {
-		log.Printf("Error: Access denied")
-		return "Error", fmt.Errorf("access denied")
-	}
-
-	// Set fields. Admin can delete any operation and user can only delete his own operations
-	if userAuth.Rol == model.RolAdmin {
-		userId = ""
-	} else {
-		userId = userAuth.ID
-	}
-
-	// Delete operation in db
-	correct, err := operations.Delete(id, userId)
-	if err != nil || !correct {
-		log.Printf("Error: Delete operation")
-		return "Error", err
-	}
-
-	return "Deletion success", nil
 }
 
 // Operations is the resolver for the operations field.
