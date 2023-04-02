@@ -39,11 +39,6 @@ const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     try {
-      console.log('Login');
-      const res = await axios.get(
-        'https://jsonplaceholder.typicode.com/todos/1'
-      );
-      console.log(res);
       const response = await axios.post(path, {
         query: `query login($username: String!, $password: String!){
             mutation {
