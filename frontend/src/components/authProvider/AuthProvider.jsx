@@ -39,6 +39,7 @@ const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     try {
+      console.log(path);
       const response = await axios.post(path, {
         query: `query login($username: String!, $password: String!){
             mutation {
