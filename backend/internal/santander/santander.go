@@ -107,9 +107,13 @@ func GetTokenWithRefresh(refresh string) (string, error) {
 
 	// Make the request
 	res, err := http.DefaultClient.Do(req)
-	if err != nil || res.StatusCode != http.StatusOK {
+	if err != nil {
 		log.Printf("Error: Make request")
         return "", err
+	}
+	if res.StatusCode != http.StatusOK {
+		log.Printf("Error: Response %d", res.StatusCode)
+        return "", fmt.Errorf("error %d", res.StatusCode)
 	}
 	defer res.Body.Close()
 
@@ -123,6 +127,7 @@ func GetTokenWithRefresh(refresh string) (string, error) {
 
 	fmt.Println("ResponseTokenEndpoint:", response)
 	fmt.Println("AccessToken:", response.AccessToken)
+	fmt.Println("TokenType:", response.TokenType)
 	fmt.Println("ExpiresIn:", response.ExpiresIn)
 	fmt.Println("RefreshToken:", response.RefreshToken)
 	fmt.Println("AuthToken:", response.AuthToken)
