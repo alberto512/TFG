@@ -37,6 +37,7 @@ func GetTokenWithCode(code string) (string, error) {
 	encodedBody := body.Encode()
 
 	// Create the request
+	log.Printf("Url %s", tokenEndpoint)
 	req, err := http.NewRequest("POST", tokenEndpoint, strings.NewReader(encodedBody))
 	if err != nil {
 		log.Printf("Error: Create request")
@@ -52,11 +53,14 @@ func GetTokenWithCode(code string) (string, error) {
 
 	// Make the request
 	res, err := http.DefaultClient.Do(req)
-	if err != nil || res.StatusCode != http.StatusOK {
+	if err != nil {
 		log.Printf("Error: Make request")
-		log.Printf("%s", err)
-		log.Printf("%d", res.StatusCode)
         return "", err
+	}
+	if res.StatusCode != http.StatusOK {
+		log.Printf("Error: Response %d", res.StatusCode)
+		log.Printf("%s", res.Body)
+        return "", fmt.Errorf("error %d", res.StatusCode)
 	}
 	defer res.Body.Close()
 
