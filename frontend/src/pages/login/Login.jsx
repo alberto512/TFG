@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import './Login.css';
 import { useAuth } from 'components/authProvider/AuthProvider';
+import './Login.css';
 
 const Login = () => {
   const { token, onLogin } = useAuth();

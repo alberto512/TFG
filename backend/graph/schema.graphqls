@@ -1,7 +1,7 @@
 type Mutation {
   login(username: String!, password: String!): String!
   refreshToken(token: String!): String!
-  createUser(username: String!, password: String!, rol: Rol!): User!
+  createUser(username: String!, password: String!, role: Role!): User!
   updateUser(id: ID!, password: String!): User!
   deleteUser(id: ID!): String!
   createOperation(input: NewOperation!): Operation!
@@ -21,7 +21,7 @@ type Query {
   operationsByCategory(category: String!): [Operation!]!
 }
 
-enum Rol {
+enum Role {
   ADMIN
   USER
 }
@@ -30,7 +30,7 @@ type User {
   id: ID!
   username: String!
   password: String!
-  rol: Rol!
+  role: Role!
   operations: [Operation!]!
 }
 

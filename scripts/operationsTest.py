@@ -5,11 +5,11 @@ url = 'http://localhost:8080/'
 # Create user
 body = """
     mutation {
-        createUser(username: "user1", password: "123", rol: ADMIN) {
+        createUser(username: "user1", password: "123", role: ADMIN) {
             id
             username
             password
-            rol
+            role
             operations{
                 id
             }

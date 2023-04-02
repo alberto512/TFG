@@ -66,7 +66,7 @@ func (r *mutationResolver) RefreshToken(ctx context.Context, token string) (stri
 }
 
 // CreateUser is the resolver for the createUser field.
-func (r *mutationResolver) CreateUser(ctx context.Context, username string, password string, rol model.Rol) (*model.User, error) {
+func (r *mutationResolver) CreateUser(ctx context.Context, username string, password string, role model.Role) (*model.User, error) {
 	// Set user
 	var user users.User
 
@@ -75,7 +75,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, username string, pass
 	// Create user struct
 	user.Username = username
 	user.Password = password
-	user.Rol = rol
+	user.Role = role
 
 	// Create user in db
 	err := user.Create()
@@ -89,7 +89,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, username string, pass
 		ID:       user.ID,
 		Username: user.Username,
 		Password: user.Password,
-		Rol:      user.Rol,
+		Role:     user.Role,
 	}
 
 	return graphqlUser, nil
@@ -110,7 +110,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, password s
 	}
 
 	// Set fields. Admin can edit any user and User can only edit himself
-	if userAuth.Rol == model.RolAdmin {
+	if userAuth.Role == model.RoleAdmin {
 		user.ID = id
 	} else {
 		user.ID = userAuth.ID
@@ -129,7 +129,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id string, password s
 		ID:       user.ID,
 		Username: user.Username,
 		Password: user.Password,
-		Rol:      user.Rol,
+		Role:     user.Role,
 	}
 
 	return graphqlUser, nil
@@ -149,7 +149,7 @@ func (r *mutationResolver) DeleteUser(ctx context.Context, id string) (string, e
 	}
 
 	// Only allow deletion if is an admin
-	if userAuth.Rol != model.RolAdmin {
+	if userAuth.Role != model.RoleAdmin {
 		log.Printf("Error: Access denied")
 		return "Error", fmt.Errorf("access denied")
 	}
@@ -224,7 +224,7 @@ func (r *mutationResolver) UpdateOperation(ctx context.Context, input *model.Upd
 	}
 
 	// Set fields. Admin can update any operation and user can only update his own operations
-	if userAuth.Rol == model.RolAdmin {
+	if userAuth.Role == model.RoleAdmin {
 		userId = ""
 	} else {
 		userId = userAuth.ID
@@ -275,7 +275,7 @@ func (r *mutationResolver) DeleteOperation(ctx context.Context, id string) (stri
 	}
 
 	// Set fields. Admin can delete any operation and user can only delete his own operations
-	if userAuth.Rol == model.RolAdmin {
+	if userAuth.Role == model.RoleAdmin {
 		userId = ""
 	} else {
 		userId = userAuth.ID
@@ -338,7 +338,7 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 	}
 
 	// Only allow operation if is an admin
-	if userAuth.Rol != model.RolAdmin {
+	if userAuth.Role != model.RoleAdmin {
 		log.Printf("Error: Access denied")
 		return graphqlUsers, fmt.Errorf("access denied")
 	}
@@ -356,7 +356,7 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 			ID:       user.ID,
 			Username: user.Username,
 			Password: user.Password,
-			Rol:      user.Rol,
+			Role:     user.Role,
 		})
 	}
 
@@ -378,7 +378,7 @@ func (r *queryResolver) UserByID(ctx context.Context, id string) (*model.User, e
 	}
 
 	// Only allow operation if is an admin
-	if userAuth.Rol != model.RolAdmin {
+	if userAuth.Role != model.RoleAdmin {
 		log.Printf("Error: Access denied")
 		return &model.User{}, fmt.Errorf("access denied")
 	}
@@ -397,7 +397,7 @@ func (r *queryResolver) UserByID(ctx context.Context, id string) (*model.User, e
 		ID:       user.ID,
 		Username: user.Username,
 		Password: user.Password,
-		Rol:      user.Rol,
+		Role:     user.Role,
 	}
 
 	return graphqlUser, nil
@@ -431,7 +431,7 @@ func (r *queryResolver) UserByToken(ctx context.Context) (*model.User, error) {
 		ID:       user.ID,
 		Username: user.Username,
 		Password: user.Password,
-		Rol:      user.Rol,
+		Role:     user.Role,
 	}
 
 	return graphqlUser, nil
@@ -453,7 +453,7 @@ func (r *queryResolver) Operations(ctx context.Context) ([]*model.Operation, err
 	}
 
 	// Set fields. Admin can get any operation and user can only get his own operations
-	if userAuth.Rol == model.RolAdmin {
+	if userAuth.Role == model.RoleAdmin {
 		userId = ""
 	} else {
 		userId = userAuth.ID
@@ -498,7 +498,7 @@ func (r *queryResolver) OperationByID(ctx context.Context, id string) (*model.Op
 	}
 
 	// Set fields. Admin can get any operation and user can only get his own operations
-	if userAuth.Rol == model.RolAdmin {
+	if userAuth.Role == model.RoleAdmin {
 		userId = ""
 	} else {
 		userId = userAuth.ID
@@ -545,7 +545,7 @@ func (r *queryResolver) OperationsByDate(ctx context.Context, initDate int, endD
 	}
 
 	// Set fields. Admin can get any operation and user can only get his own operations
-	if userAuth.Rol == model.RolAdmin {
+	if userAuth.Role == model.RoleAdmin {
 		userId = ""
 	} else {
 		userId = userAuth.ID
@@ -590,7 +590,7 @@ func (r *queryResolver) OperationsByCategory(ctx context.Context, category strin
 	}
 
 	// Set fields. Admin can get any operation and user can only get his own operations
-	if userAuth.Rol == model.RolAdmin {
+	if userAuth.Role == model.RoleAdmin {
 		userId = ""
 	} else {
 		userId = userAuth.ID

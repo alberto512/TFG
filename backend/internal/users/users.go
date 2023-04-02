@@ -16,7 +16,7 @@ type User struct {
     ID       string `bson:"_id,omitempty"`
     Username string `bson:"username,omitempty"`
     Password string `bson:"password,omitempty"`
-    Rol 	 model.Rol `bson:"rol,omitempty"`
+    Role 	 model.Role `bson:"role,omitempty"`
 }
 
 func (user *User) Authenticate() (bool, error) {
@@ -74,7 +74,7 @@ func (user *User) Create() (error) {
     res, err := mongo.InsertOne("users", bson.D{
         {Key: "username", Value: user.Username},
         {Key: "password", Value: hashedPassword},
-        {Key: "rol", Value: user.Rol},
+        {Key: "role", Value: user.Role},
     })
     if err != nil {
         log.Printf("Error: Create user in db")

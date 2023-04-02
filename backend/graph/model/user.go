@@ -4,6 +4,6 @@ type User struct {
 	ID         string       `json:"id"`
 	Username   string       `json:"username"`
 	Password   string       `json:"password"`
-	Rol        Rol          `json:"rol"`
+	Role       Role         `json:"role"`
 	Operations []*Operation `json:"operations"`
 }

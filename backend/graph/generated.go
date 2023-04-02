@@ -48,7 +48,7 @@ type DirectiveRoot struct {
 type ComplexityRoot struct {
 	Mutation struct {
 		CreateOperation func(childComplexity int, input model.NewOperation) int
-		CreateUser      func(childComplexity int, username string, password string, rol model.Rol) int
+		CreateUser      func(childComplexity int, username string, password string, role model.Role) int
 		DeleteOperation func(childComplexity int, id string) int
 		DeleteUser      func(childComplexity int, id string) int
 		Login           func(childComplexity int, username string, password string) int
@@ -82,7 +82,7 @@ type ComplexityRoot struct {
 		ID         func(childComplexity int) int
 		Operations func(childComplexity int) int
 		Password   func(childComplexity int) int
-		Rol        func(childComplexity int) int
+		Role       func(childComplexity int) int
 		Username   func(childComplexity int) int
 	}
 }
@@ -90,7 +90,7 @@ type ComplexityRoot struct {
 type MutationResolver interface {
 	Login(ctx context.Context, username string, password string) (string, error)
 	RefreshToken(ctx context.Context, token string) (string, error)
-	CreateUser(ctx context.Context, username string, password string, rol model.Rol) (*model.User, error)
+	CreateUser(ctx context.Context, username string, password string, role model.Role) (*model.User, error)
 	UpdateUser(ctx context.Context, id string, password string) (*model.User, error)
 	DeleteUser(ctx context.Context, id string) (string, error)
 	CreateOperation(ctx context.Context, input model.NewOperation) (*model.Operation, error)
@@ -149,7 +149,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateUser(childComplexity, args["username"].(string), args["password"].(string), args["rol"].(model.Rol)), true
+		return e.complexity.Mutation.CreateUser(childComplexity, args["username"].(string), args["password"].(string), args["role"].(model.Role)), true
 
 	case "Mutation.deleteOperation":
 		if e.complexity.Mutation.DeleteOperation == nil {
@@ -379,12 +379,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.User.Password(childComplexity), true
 
-	case "User.rol":
-		if e.complexity.User.Rol == nil {
+	case "User.role":
+		if e.complexity.User.Role == nil {
 			break
 		}
 
-		return e.complexity.User.Rol(childComplexity), true
+		return e.complexity.User.Role(childComplexity), true
 
 	case "User.username":
 		if e.complexity.User.Username == nil {
@@ -518,15 +518,15 @@ func (ec *executionContext) field_Mutation_createUser_args(ctx context.Context, 
 		}
 	}
 	args["password"] = arg1
-	var arg2 model.Rol
-	if tmp, ok := rawArgs["rol"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rol"))
-		arg2, err = ec.unmarshalNRol2tfgᚋgraphᚋmodelᚐRol(ctx, tmp)
+	var arg2 model.Role
+	if tmp, ok := rawArgs["role"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("role"))
+		arg2, err = ec.unmarshalNRole2tfgᚋgraphᚋmodelᚐRole(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["rol"] = arg2
+	args["role"] = arg2
 	return args, nil
 }
 
@@ -912,7 +912,7 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateUser(rctx, fc.Args["username"].(string), fc.Args["password"].(string), fc.Args["rol"].(model.Rol))
+		return ec.resolvers.Mutation().CreateUser(rctx, fc.Args["username"].(string), fc.Args["password"].(string), fc.Args["role"].(model.Role))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -942,8 +942,8 @@ func (ec *executionContext) fieldContext_Mutation_createUser(ctx context.Context
 				return ec.fieldContext_User_username(ctx, field)
 			case "password":
 				return ec.fieldContext_User_password(ctx, field)
-			case "rol":
-				return ec.fieldContext_User_rol(ctx, field)
+			case "role":
+				return ec.fieldContext_User_role(ctx, field)
 			case "operations":
 				return ec.fieldContext_User_operations(ctx, field)
 			}
@@ -1008,8 +1008,8 @@ func (ec *executionContext) fieldContext_Mutation_updateUser(ctx context.Context
 				return ec.fieldContext_User_username(ctx, field)
 			case "password":
 				return ec.fieldContext_User_password(ctx, field)
-			case "rol":
-				return ec.fieldContext_User_rol(ctx, field)
+			case "role":
+				return ec.fieldContext_User_role(ctx, field)
 			case "operations":
 				return ec.fieldContext_User_operations(ctx, field)
 			}
@@ -1690,8 +1690,8 @@ func (ec *executionContext) fieldContext_Query_users(ctx context.Context, field 
 				return ec.fieldContext_User_username(ctx, field)
 			case "password":
 				return ec.fieldContext_User_password(ctx, field)
-			case "rol":
-				return ec.fieldContext_User_rol(ctx, field)
+			case "role":
+				return ec.fieldContext_User_role(ctx, field)
 			case "operations":
 				return ec.fieldContext_User_operations(ctx, field)
 			}
@@ -1745,8 +1745,8 @@ func (ec *executionContext) fieldContext_Query_userById(ctx context.Context, fie
 				return ec.fieldContext_User_username(ctx, field)
 			case "password":
 				return ec.fieldContext_User_password(ctx, field)
-			case "rol":
-				return ec.fieldContext_User_rol(ctx, field)
+			case "role":
+				return ec.fieldContext_User_role(ctx, field)
 			case "operations":
 				return ec.fieldContext_User_operations(ctx, field)
 			}
@@ -1811,8 +1811,8 @@ func (ec *executionContext) fieldContext_Query_userByToken(ctx context.Context, 
 				return ec.fieldContext_User_username(ctx, field)
 			case "password":
 				return ec.fieldContext_User_password(ctx, field)
-			case "rol":
-				return ec.fieldContext_User_rol(ctx, field)
+			case "role":
+				return ec.fieldContext_User_role(ctx, field)
 			case "operations":
 				return ec.fieldContext_User_operations(ctx, field)
 			}
@@ -2342,8 +2342,8 @@ func (ec *executionContext) fieldContext_User_password(ctx context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _User_rol(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_User_rol(ctx, field)
+func (ec *executionContext) _User_role(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_User_role(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -2356,7 +2356,7 @@ func (ec *executionContext) _User_rol(ctx context.Context, field graphql.Collect
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Rol, nil
+		return obj.Role, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2368,19 +2368,19 @@ func (ec *executionContext) _User_rol(ctx context.Context, field graphql.Collect
 		}
 		return graphql.Null
 	}
-	res := resTmp.(model.Rol)
+	res := resTmp.(model.Role)
 	fc.Result = res
-	return ec.marshalNRol2tfgᚋgraphᚋmodelᚐRol(ctx, field.Selections, res)
+	return ec.marshalNRole2tfgᚋgraphᚋmodelᚐRole(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_User_rol(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_User_role(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "User",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Rol does not have child fields")
+			return nil, errors.New("field of type Role does not have child fields")
 		},
 	}
 	return fc, nil
@@ -4723,9 +4723,9 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
-		case "rol":
+		case "role":
 
-			out.Values[i] = ec._User_rol(ctx, field, obj)
+			out.Values[i] = ec._User_role(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
@@ -5202,13 +5202,13 @@ func (ec *executionContext) marshalNOperation2ᚖtfgᚋgraphᚋmodelᚐOperation
 	return ec._Operation(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNRol2tfgᚋgraphᚋmodelᚐRol(ctx context.Context, v interface{}) (model.Rol, error) {
-	var res model.Rol
+func (ec *executionContext) unmarshalNRole2tfgᚋgraphᚋmodelᚐRole(ctx context.Context, v interface{}) (model.Role, error) {
+	var res model.Role
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNRol2tfgᚋgraphᚋmodelᚐRol(ctx context.Context, sel ast.SelectionSet, v model.Rol) graphql.Marshaler {
+func (ec *executionContext) marshalNRole2tfgᚋgraphᚋmodelᚐRole(ctx context.Context, sel ast.SelectionSet, v model.Role) graphql.Marshaler {
 	return v
 }
 

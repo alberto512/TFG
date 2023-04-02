@@ -62,6 +62,31 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  const register = async (username, password, role) => {
+    try {
+      const response = await axios.post(path, {
+        query: `mutation Login($username: String!, $password: String!) {
+          login(username: $username, password: $password)
+        }`,
+        variables: {
+          username,
+          password,
+        },
+      });
+
+      if (response.data.data.login === '') {
+        return;
+      }
+
+      setToken(response.data.data.login);
+
+      const origin = location.state?.from?.pathname || '/dashboard';
+      navigate(origin);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const logout = () => {
     setToken(null);
   };
@@ -69,6 +94,7 @@ const AuthProvider = ({ children }) => {
   const value = {
     token,
     onLogin: login,
+    onRegister: register,
     onLogout: logout,
   };
 
