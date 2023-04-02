@@ -54,6 +54,8 @@ func GetTokenWithCode(code string) (string, error) {
 	res, err := http.DefaultClient.Do(req)
 	if err != nil || res.StatusCode != http.StatusOK {
 		log.Printf("Error: Make request")
+		log.Printf("%s", err)
+		log.Printf("%d", res.StatusCode)
         return "", err
 	}
 	defer res.Body.Close()
