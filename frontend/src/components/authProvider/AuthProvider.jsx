@@ -41,7 +41,11 @@ const AuthProvider = ({ children }) => {
     try {
       console.log('Login');
       const response = await axios.post(path, {
-        query: `mutation {login(username: $username, password: $password)}`,
+        query: `query login($username: String!, $password: String!){
+            mutation {
+                login(username: $username, password: $password)
+            }
+        }`,
         variables: {
           username,
           password,
