@@ -7,6 +7,7 @@ import (
 	"tfg/graph"
 
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/rs/cors"
 
 	"tfg/internal/middleware"
 	"tfg/internal/mongo"
@@ -37,6 +38,11 @@ func main() {
 
 	// Start router, add middleware, add default route and start server
 	router := chi.NewRouter()
+
+	router.Use(cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:8080", "https://tfg-frontend-production.up.railway.app/"},
+	}).Handler)
+
 	router.Use(middleware.Middleware())
 
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
