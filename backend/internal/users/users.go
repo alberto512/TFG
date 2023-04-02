@@ -8,6 +8,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -219,8 +220,11 @@ func (user *User) Update() (error) {
 		},
 	}
 
+    // Update options
+    opts := options.Update()
+
     // Execute update
-    result, err := mongo.UpdateOne("users", filter, update)
+    result, err := mongo.UpdateOne("users", filter, update, opts)
     if err != nil {
         log.Printf("Error: Update user in db")
         return err

@@ -9,6 +9,12 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"tfg/internal/mongo"
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const redirect_uri = "https://tfg-app.netlify.app/"
@@ -21,10 +27,56 @@ type ResponseTokenEndpoint struct {
 	TokenType  		string 	`json:"token_type"`
 	ExpiresIn   	int 	`json:"expires_in"`
 	RefreshToken	string 	`json:"refresh_token"`
-	AuthToken 		string 	`json:"auth_token"`
 }
 
-func GetTokenWithCode(code string) (string, error) {
+type UserToken struct {
+    ID       		string		`bson:"_id,omitempty"`
+	UserID      	string		`bson:"userId,omitempty"`
+    AccessToken 	string 		`bson:"accessToken,omitempty"`
+    Expires 		time.Time	`bson:"expires,omitempty"`
+	RefreshToken	string 		`bson:"refreshToken,omitempty"`
+}
+
+func saveToken(userId string, token *ResponseTokenEndpoint) (error) {
+	log.Printf("Save token in database")
+
+	// String id to ObjectId
+	id, err := primitive.ObjectIDFromHex(userId)
+	if err != nil {
+		log.Printf("Error: Convert string to id")
+        return err
+	}
+
+	// Get date of expiration of token
+	date := time.Now().UnixMilli() + int64(token.ExpiresIn) + 1000
+
+	// Filter to get token by userId
+	filter := bson.D{
+		{Key: "userId", Value: id},
+	}
+
+	// Update fields
+	update := bson.M{
+		"userId": id,
+		"accessToken": token.AccessToken,
+		"expires": date,
+		"refreshToken": token.RefreshToken,
+	}
+
+	// Set option to create if it doesn't exist
+	opts := options.Update().SetUpsert(true)
+
+	// Execute insert
+	_, err = mongo.UpdateOne("santanderTokens", filter, update, opts)
+	if err != nil {
+		log.Printf("Error: Save operation in db")
+		return err
+	}
+
+	return nil
+}
+
+func GetTokenWithCode(userId string, code string) (string, error) {
 	log.Printf("Get token with code")
 
 	// Create body
@@ -46,7 +98,7 @@ func GetTokenWithCode(code string) (string, error) {
 	// Add all the headers
 	req.Header.Add("X-IBM-Client-Id", os.Getenv("SANTANDER_ID"))
 	req.Header.Add("X-IBM-Client-Secret", os.Getenv("SANTANDER_SECRET"))
-	req.Header.Add("Authorization", b64.StdEncoding.EncodeToString([]byte(os.Getenv("SANTANDER_ID")+":"+os.Getenv("SANTANDER_ID"))))
+	req.Header.Add("Authorization", b64.StdEncoding.EncodeToString([]byte(os.Getenv("SANTANDER_ID")+":"+os.Getenv("SANTANDER_SECRET"))))
 	req.Header.Add("content-type", "application/x-www-form-urlencoded")
 	req.Header.Add("accept", "application/json")
 
@@ -70,18 +122,13 @@ func GetTokenWithCode(code string) (string, error) {
         return "", err
 	}
 
-	fmt.Println("ResponseTokenEndpoint:", response)
-	fmt.Println("AccessToken:", response.AccessToken)
-	fmt.Println("TokenType:", response.TokenType)
-	fmt.Println("ExpiresIn:", response.ExpiresIn)
-	fmt.Println("RefreshToken:", response.RefreshToken)
-	fmt.Println("AuthToken:", response.AuthToken)
+	saveToken(userId, response)
 
-	return "", nil
+	return response.AccessToken, nil
 }
 
-func GetTokenWithRefresh(refresh string) (string, error) {
-	log.Printf("Get token with code")
+func GetTokenWithRefresh(userId string, refresh string) (string, error) {
+	log.Printf("Get token with refresh")
 
 	// Create body
 	body := url.Values{}
@@ -101,7 +148,7 @@ func GetTokenWithRefresh(refresh string) (string, error) {
 	// Add all the headers
 	req.Header.Add("X-IBM-Client-Id", os.Getenv("SANTANDER_ID"))
 	req.Header.Add("X-IBM-Client-Secret", os.Getenv("SANTANDER_SECRET"))
-	req.Header.Add("Authorization", b64.StdEncoding.EncodeToString([]byte(os.Getenv("SANTANDER_ID")+":"+os.Getenv("SANTANDER_ID"))))
+	req.Header.Add("Authorization", b64.StdEncoding.EncodeToString([]byte(os.Getenv("SANTANDER_ID")+":"+os.Getenv("SANTANDER_SECRET"))))
 	req.Header.Add("content-type", "application/x-www-form-urlencoded")
 	req.Header.Add("accept", "application/json")
 
@@ -125,12 +172,7 @@ func GetTokenWithRefresh(refresh string) (string, error) {
         return "", err
 	}
 
-	fmt.Println("ResponseTokenEndpoint:", response)
-	fmt.Println("AccessToken:", response.AccessToken)
-	fmt.Println("TokenType:", response.TokenType)
-	fmt.Println("ExpiresIn:", response.ExpiresIn)
-	fmt.Println("RefreshToken:", response.RefreshToken)
-	fmt.Println("AuthToken:", response.AuthToken)
+	saveToken(userId, response)
 
-	return "", nil
+	return response.AccessToken, nil
 }

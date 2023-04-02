@@ -31,7 +31,7 @@ func connect(uri string)(*mongo.Client, context.Context, context.CancelFunc, err
     // Create index for field username in collection users
     collection := client.Database(dataBase).Collection("users")
 
-    _, errIndex :=collection.Indexes().CreateOne(
+    _, errIndex := collection.Indexes().CreateOne(
         ctx, 
         mongo.IndexModel{
             Keys:    bson.D{{Key: "username", Value: 1}},
@@ -39,9 +39,25 @@ func connect(uri string)(*mongo.Client, context.Context, context.CancelFunc, err
         },
     )
     if errIndex != nil {
-		log.Printf("Error: Create index")
+		log.Printf("Error: Create index of users")
 		panic(err)
 	}
+
+    // Create index for field userId in collection santanderTokens
+    collection = client.Database(dataBase).Collection("santanderTokens")
+
+    _, errIndex = collection.Indexes().CreateOne(
+        ctx, 
+        mongo.IndexModel{
+            Keys:    bson.D{{Key: "userId", Value: 1}},
+            Options: options.Index().SetUnique(true),
+        },
+    )
+    if errIndex != nil {
+		log.Printf("Error: Create index of santanderTokens")
+		panic(err)
+	}
+
 
     return client, ctx, cancel, err
 }
@@ -90,12 +106,12 @@ func Aggregate(col string, pipeline interface{}) (result *mongo.Cursor, err erro
     return collection.Aggregate(ctx, pipeline)
 }
 
-func UpdateOne(col string, filter, update interface{}) (result *mongo.UpdateResult, err error) {
+func UpdateOne(col string, filter, update interface{}, opts *options.UpdateOptions) (result *mongo.UpdateResult, err error) {
     log.Printf("Mongo: Update one")
 
     collection := client.Database(dataBase).Collection(col)
 
-    return collection.UpdateOne(ctx, filter, update)
+    return collection.UpdateOne(ctx, filter, update, opts)
 }
 
 func UpdateMany(col string, filter, update interface{}) (result *mongo.UpdateResult, err error) {
