@@ -4,7 +4,6 @@ import (
 	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -18,11 +17,11 @@ const endpoint = "https://apis-sandbox.bancosantander.es/canales-digitales/sb/v2
 const tokenEndpoint = endpoint + "token";
 
 type ResponseTokenEndpoint struct {
-	AccessToken     string    `json:"access_token"`
-	TokenType  string `json:"token_type"`
-	ExpiresIn   int `json:"expires_in"`
-	RefreshToken string    `json:"refresh_token"`
-	AuthToken string `json:"auth_token"`
+	AccessToken		string	`json:"access_token"`
+	TokenType  		string 	`json:"token_type"`
+	ExpiresIn   	int 	`json:"expires_in"`
+	RefreshToken	string 	`json:"refresh_token"`
+	AuthToken 		string 	`json:"auth_token"`
 }
 
 func GetTokenWithCode(code string) (string, error) {
@@ -38,10 +37,6 @@ func GetTokenWithCode(code string) (string, error) {
 	encodedBody := body.Encode()
 
 	// Create the request
-	log.Printf("Url %s", tokenEndpoint)
-	log.Printf("Id %s", os.Getenv("SANTANDER_ID"))
-	log.Printf("Secret %s", os.Getenv("SANTANDER_SECRET"))
-	log.Printf("Authorization %s", b64.StdEncoding.EncodeToString([]byte(os.Getenv("SANTANDER_ID")+":"+os.Getenv("SANTANDER_ID"))))
 	req, err := http.NewRequest("POST", tokenEndpoint, strings.NewReader(encodedBody))
 	if err != nil {
 		log.Printf("Error: Create request")
@@ -63,8 +58,6 @@ func GetTokenWithCode(code string) (string, error) {
 	}
 	if res.StatusCode != http.StatusOK {
 		log.Printf("Error: Response %d", res.StatusCode)
-		resBody, _ := ioutil.ReadAll(res.Body)
-		fmt.Printf("client: response body: %s\n", resBody)
         return "", fmt.Errorf("error %d", res.StatusCode)
 	}
 	defer res.Body.Close()
@@ -79,6 +72,7 @@ func GetTokenWithCode(code string) (string, error) {
 
 	fmt.Println("ResponseTokenEndpoint:", response)
 	fmt.Println("AccessToken:", response.AccessToken)
+	fmt.Println("TokenType:", response.TokenType)
 	fmt.Println("ExpiresIn:", response.ExpiresIn)
 	fmt.Println("RefreshToken:", response.RefreshToken)
 	fmt.Println("AuthToken:", response.AuthToken)
