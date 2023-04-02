@@ -39,20 +39,15 @@ const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     try {
-      console.log(path);
       const response = await axios.post(path, {
-        query: `query login($username: String!, $password: String!){
-            mutation {
-                login(username: $username, password: $password)
-            }
-        }`,
+        query: `mutation{login(username: "$username", password: "$password")}`,
         variables: {
           username,
           password,
         },
       });
 
-      console.log(response);
+      console.log(response.data);
 
       //setToken(response.data.jwt);
 
