@@ -122,7 +122,11 @@ func GetTokenWithCode(userId string, code string) (string, error) {
         return "", err
 	}
 
-	saveToken(userId, response)
+	err = saveToken(userId, response)
+	if err != nil {
+		log.Printf("Error: Save token")
+        return "", err
+	}
 
 	return response.AccessToken, nil
 }
@@ -172,7 +176,11 @@ func GetTokenWithRefresh(userId string, refresh string) (string, error) {
         return "", err
 	}
 
-	saveToken(userId, response)
+	err = saveToken(userId, response)
+	if err != nil {
+		log.Printf("Error: Save token")
+        return "", err
+	}
 
 	return response.AccessToken, nil
 }
