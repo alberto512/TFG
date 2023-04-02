@@ -125,6 +125,7 @@ func GetTokenWithCode(userId string, code string) (string, error) {
         return "", err
 	}
 
+	// Save tokens in database
 	err = saveToken(userId, response)
 	if err != nil {
 		log.Printf("Error: Save token")
@@ -179,6 +180,7 @@ func GetTokenWithRefresh(userId string, refresh string) (string, error) {
         return "", err
 	}
 
+	// Save tokens in database
 	err = saveToken(userId, response)
 	if err != nil {
 		log.Printf("Error: Save token")
