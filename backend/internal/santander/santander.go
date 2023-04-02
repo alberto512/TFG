@@ -48,7 +48,7 @@ func saveToken(userId string, token *ResponseTokenEndpoint) (error) {
 	}
 
 	// Get date of expiration of token
-	date := time.Now().UnixMilli() + int64(token.ExpiresIn) + 1000
+	date := time.Now().UnixMilli() + (int64(token.ExpiresIn) * 1000)
 
 	// Filter to get token by userId
 	filter := bson.D{
