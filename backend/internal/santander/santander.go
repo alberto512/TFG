@@ -4,6 +4,7 @@ import (
 	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -14,7 +15,7 @@ import (
 const redirect_uri = "https://tfg-app.netlify.app/"
 const endpoint = "https://apis-sandbox.bancosantander.es/canales-digitales/sb/v2/";
 
-const tokenEndpoint = endpoint + "token/";
+const tokenEndpoint = endpoint + "token";
 
 type ResponseTokenEndpoint struct {
 	AccessToken     string    `json:"access_token"`
@@ -38,6 +39,9 @@ func GetTokenWithCode(code string) (string, error) {
 
 	// Create the request
 	log.Printf("Url %s", tokenEndpoint)
+	log.Printf("Id %s", os.Getenv("SANTANDER_ID"))
+	log.Printf("Secret %s", os.Getenv("SANTANDER_SECRET"))
+	log.Printf("Authorization %s", b64.StdEncoding.EncodeToString([]byte(os.Getenv("SANTANDER_ID")+":"+os.Getenv("SANTANDER_ID"))))
 	req, err := http.NewRequest("POST", tokenEndpoint, strings.NewReader(encodedBody))
 	if err != nil {
 		log.Printf("Error: Create request")
@@ -59,7 +63,8 @@ func GetTokenWithCode(code string) (string, error) {
 	}
 	if res.StatusCode != http.StatusOK {
 		log.Printf("Error: Response %d", res.StatusCode)
-		log.Printf("%s", res.Body)
+		resBody, _ := ioutil.ReadAll(res.Body)
+		fmt.Printf("client: response body: %s\n", resBody)
         return "", fmt.Errorf("error %d", res.StatusCode)
 	}
 	defer res.Body.Close()
