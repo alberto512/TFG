@@ -56,11 +56,14 @@ func saveToken(userId string, token *ResponseTokenEndpoint) (error) {
 	}
 
 	// Update fields
-	update := bson.M{
-		"userId": id,
-		"accessToken": token.AccessToken,
-		"expires": date,
-		"refreshToken": token.RefreshToken,
+	update := bson.D{
+		{Key: "$set", Value: bson.D{
+			{Key: "userId", Value: id},
+			{Key: "accessToken", Value: token.AccessToken},
+			{Key: "expires", Value: date},
+			{Key: "refreshToken", Value: token.RefreshToken},
+			},
+		},
 	}
 
 	// Set option to create if it doesn't exist
