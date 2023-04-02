@@ -10,7 +10,8 @@ type Mutation {
 }
 
 type Query {
-  getAuthUrl(code: String!): String!
+  getTokenWithCode(code: String!): String!
+  getTokenWithRefresh(refresh: String!): String!
   users: [User!]!
   userById(id: ID!): User!
   userByToken: User!

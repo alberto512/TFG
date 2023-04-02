@@ -291,9 +291,32 @@ func (r *mutationResolver) DeleteOperation(ctx context.Context, id string) (stri
 	return "Deletion success", nil
 }
 
-// GetAuthURL is the resolver for the getAuthUrl field.
-func (r *queryResolver) GetAuthURL(ctx context.Context, code string) (string, error) {
-	return santander.AuthorizeOpenBusiness(code)
+// GetTokenWithCode is the resolver for the getTokenWithCode field.
+func (r *queryResolver) GetTokenWithCode(ctx context.Context, code string) (string, error) {
+	// Set variables
+	var userAuth *users.User
+
+	// Get user from context
+	if userAuth = middleware.ForContext(ctx); userAuth == nil {
+		log.Printf("Error: Access denied")
+		return "Error", fmt.Errorf("access denied")
+	}
+
+	return santander.GetTokenWithCode(code)
+}
+
+// GetTokenWithRefresh is the resolver for the getTokenWithRefresh field.
+func (r *queryResolver) GetTokenWithRefresh(ctx context.Context, refresh string) (string, error) {
+	// Set variables
+	var userAuth *users.User
+
+	// Get user from context
+	if userAuth = middleware.ForContext(ctx); userAuth == nil {
+		log.Printf("Error: Access denied")
+		return "Error", fmt.Errorf("access denied")
+	}
+
+	return santander.GetTokenWithRefresh(refresh)
 }
 
 // Users is the resolver for the users field.
