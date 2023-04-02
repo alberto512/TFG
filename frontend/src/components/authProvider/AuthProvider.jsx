@@ -40,19 +40,23 @@ const AuthProvider = ({ children }) => {
   const login = async (username, password) => {
     try {
       const response = await axios.post(path, {
-        query: `mutation{login(username: "$username", password: "$password")}`,
+        query: `mutation Login($username: String!, $password: String!) {
+          login(username: $username, password: $password)
+        }`,
         variables: {
           username,
           password,
         },
       });
 
-      console.log(response.data);
+      if (response.data.data.login === '') {
+        return;
+      }
 
-      //setToken(response.data.jwt);
+      setToken(response.data.data.login);
 
-      //const origin = location.state?.from?.pathname || '/dashboard';
-      //navigate(origin);
+      const origin = location.state?.from?.pathname || '/dashboard';
+      navigate(origin);
     } catch (error) {
       console.log(error);
     }

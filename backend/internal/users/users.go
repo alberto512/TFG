@@ -24,10 +24,6 @@ func (user *User) Authenticate() (bool, error) {
 
     log.Printf("Authenticate user")
 
-    log.Printf("Authenticate user %s", user)
-    log.Printf("Authenticate user %s", user.Username)
-    log.Printf("Authenticate user %s", user.Password)
-
     // Query to get user by username
     query := bson.D{
         {Key: "username", Value: user.Username},
