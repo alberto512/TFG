@@ -39,9 +39,7 @@ func main() {
 	// Start router, add middleware, add default route and start server
 	router := chi.NewRouter()
 
-	router.Use(cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000", "https://tfg-frontend-production.up.railway.app"},
-	}).Handler)
+	router.Use(cors.Default().Handler(mux))
 
 	router.Use(middleware.Middleware())
 
