@@ -20,6 +20,13 @@ func Middleware() func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			var user users.User
 
+			for name, values := range r.Header {
+				// Loop over all values for the name.
+				for _, value := range values {
+					log.Printf("Unauthenticated %s %s", name, value)
+				}
+			}
+
 			log.Printf("Starting middleware")
 
 			header := r.Header.Get("Authorization")
