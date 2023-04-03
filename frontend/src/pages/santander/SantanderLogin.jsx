@@ -10,7 +10,7 @@ const SantanderLogin = () => {
   const backendUrl = process.env.REACT_APP_BACKEND_URL;
   const santanderUrl =
     process.env.REACT_APP_SANTANDER_URL + 'prestep-authorize';
-  const redirectUri = process.env.REACT_APP_FRONTEND_URL + 'santanderLogin/';
+  const redirectUri = process.env.REACT_APP_FRONTEND_URL + 'santanderLogin';
   const [isToken, setIsToken] = useState(false);
 
   useEffect(() => {
