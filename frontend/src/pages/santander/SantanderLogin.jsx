@@ -27,7 +27,7 @@ const SantanderLogin = () => {
         },
         {
           headers: {
-            Authorization: token
+            Authorization: token,
           },
         }
       );
