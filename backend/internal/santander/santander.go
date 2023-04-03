@@ -4,8 +4,6 @@ import (
 	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -20,31 +18,33 @@ import (
 )
 
 const redirect_uri = "https://tfg-app.netlify.app/"
-const endpoint = "https://apis-sandbox.bncosantander.es/canales-digitales/sb/v2/";
+const endpoint = "https://apis-sandbox.bancosantander.es/canales-digitales/sb/v2/";
 
 const tokenEndpoint = endpoint + "token";
-   
-type Respons  okenEndoint struct {
-	AccessToken	 stri   `json:"expires_in"`
-	RefreshToken string `json:"refresh_token"`
+
+type ResponseTokenEndpoint struct {
+	AccessToken		string	`json:"access_token"`
+	TokenType  		string 	`json:"token_type"`
+	ExpiresIn   	int 	`json:"expires_in"`
+	RefreshToken	string 	`json:"refresh_token"`
 }
 
 type UserToken struct {
-	ID           string    `bson:"_id,omitempty"`
-	UserID       string    `bson:"userId,omitempty"`
-	AccessToken  string    `bson:"accessToken,omitempty"`
-	Expires      time.Time `bson:"expires,omitempty"`
-	RefreshToken string    `bson:"refreshToken,omitempty"`
+    ID       		string		`bson:"_id,omitempty"`
+	UserID      	string		`bson:"userId,omitempty"`
+    AccessToken 	string 		`bson:"accessToken,omitempty"`
+    Expires 		time.Time	`bson:"expires,omitempty"`
+	RefreshToken	string 		`bson:"refreshToken,omitempty"`
 }
 
-func saveToken(userId string, token *ResponseTokenEndpoint) error {
+func saveToken(userId string, token *ResponseTokenEndpoint) (error) {
 	log.Printf("Save token in database")
 
 	// String id to ObjectId
 	id, err := primitive.ObjectIDFromHex(userId)
 	if err != nil {
 		log.Printf("Error: Convert string to id")
-		return err
+        return err
 	}
 
 	// Get date of expiration of token
@@ -62,7 +62,7 @@ func saveToken(userId string, token *ResponseTokenEndpoint) error {
 			{Key: "accessToken", Value: token.AccessToken},
 			{Key: "expires", Value: date},
 			{Key: "refreshToken", Value: token.RefreshToken},
-		},
+			},
 		},
 	}
 
@@ -80,7 +80,7 @@ func saveToken(userId string, token *ResponseTokenEndpoint) error {
 }
 
 func GetTokenWithCode(userId string, code string) (string, error) {
-	log.Printf("Get token with code")
+	log.Printf("Get token with code %s", code)
 
 	// Create body
 	body := url.Values{}
@@ -95,9 +95,9 @@ func GetTokenWithCode(userId string, code string) (string, error) {
 	req, err := http.NewRequest("POST", tokenEndpoint, strings.NewReader(encodedBody))
 	if err != nil {
 		log.Printf("Error: Create request")
-		return "", err
+        return "", err
 	}
-
+	
 	// Add all the headers
 	req.Header.Add("X-IBM-Client-Id", os.Getenv("SANTANDER_ID"))
 	req.Header.Add("X-IBM-Client-Secret", os.Getenv("SANTANDER_SECRET"))
@@ -109,16 +109,11 @@ func GetTokenWithCode(userId string, code string) (string, error) {
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Printf("Error: Make request")
-		return "", err
+        return "", err
 	}
 	if res.StatusCode != http.StatusOK {
 		log.Printf("Error: Response %d", res.StatusCode)
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Fatal(err)
-		}
-		log.Printf("Error: Response %s", body)
-		return "", fmt.Errorf("error %d", res.StatusCode)
+        return "", fmt.Errorf("error %d", res.StatusCode)
 	}
 	defer res.Body.Close()
 
@@ -127,14 +122,14 @@ func GetTokenWithCode(userId string, code string) (string, error) {
 	derr := json.NewDecoder(res.Body).Decode(response)
 	if derr != nil {
 		log.Printf("Error: Decoding response")
-		return "", err
+        return "", err
 	}
 
 	// Save tokens in database
 	err = saveToken(userId, response)
 	if err != nil {
 		log.Printf("Error: Save token")
-		return "", err
+        return "", err
 	}
 
 	return response.AccessToken, nil
@@ -155,9 +150,9 @@ func GetTokenWithRefresh(userId string, refresh string) (string, error) {
 	req, err := http.NewRequest("POST", tokenEndpoint, strings.NewReader(encodedBody))
 	if err != nil {
 		log.Printf("Error: Create request")
-		return "", err
+        return "", err
 	}
-
+	
 	// Add all the headers
 	req.Header.Add("X-IBM-Client-Id", os.Getenv("SANTANDER_ID"))
 	req.Header.Add("X-IBM-Client-Secret", os.Getenv("SANTANDER_SECRET"))
@@ -169,11 +164,11 @@ func GetTokenWithRefresh(userId string, refresh string) (string, error) {
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Printf("Error: Make request")
-		return "", err
+        return "", err
 	}
 	if res.StatusCode != http.StatusOK {
 		log.Printf("Error: Response %d", res.StatusCode)
-		return "", fmt.Errorf("error %d", res.StatusCode)
+        return "", fmt.Errorf("error %d", res.StatusCode)
 	}
 	defer res.Body.Close()
 
@@ -182,18 +177,15 @@ func GetTokenWithRefresh(userId string, refresh string) (string, error) {
 	derr := json.NewDecoder(res.Body).Decode(response)
 	if derr != nil {
 		log.Printf("Error: Decoding response")
-		 != nil {
-		log.Printf("Error: Decoding response")
         return "", err
 	}
 
 	// Save tokens in database
 	err = saveToken(userId, response)
-		!= nil {
+	if err != nil {
 		log.Printf("Error: Save token")
         return "", err
 	}
-
 
 	return response.AccessToken, nil
 }
