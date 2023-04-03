@@ -28,6 +28,7 @@ const SantanderLogin = () => {
         {
           headers: {
             Authorization: token,
+            withCredentials: true,
           },
         }
       );
