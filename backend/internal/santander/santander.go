@@ -80,7 +80,7 @@ func saveToken(userId string, token *ResponseTokenEndpoint) (error) {
 }
 
 func GetTokenWithCode(userId string, code string) (string, error) {
-	log.Printf("Get token with code")
+	log.Printf("Get token with code", code)
 
 	// Create body
 	body := url.Values{}

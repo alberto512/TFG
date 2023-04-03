@@ -41,7 +41,7 @@ func main() {
 
 	router.Use(cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:3000", "https://tfg-frontend-production.up.railway.app"},
-		AllowedHeaders:   []string{"Authorization"},
+		AllowedHeaders:   []string{"Authorization", "Content-Type", "Withcredentials"},
 	}).Handler)
 
 	router.Use(middleware.Middleware())
