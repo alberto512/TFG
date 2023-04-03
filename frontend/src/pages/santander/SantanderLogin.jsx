@@ -24,6 +24,12 @@ const SantanderLogin = () => {
           variables: {
             code: queryParameters.get('code'),
           },
+        },
+        {
+          headers: {
+            Authorization: token,
+            withCredentials: true,
+          },
         }
       );
       console.log(response);
