@@ -1,10 +1,11 @@
 import React from 'react';
-import { redirect, useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Buffer } from 'buffer';
 import './RegisterBank.css';
 
 const RegisterBank = () => {
+  const navigate = useNavigate();
   const [queryParameters] = useSearchParams();
   const authorization = Buffer.from(
     'bc75ee49-9924-4160-904e-6b246d751e2c:U8jK1aX4jI8fU0hO7oX8oA4uC6pJ4nC8cY7aN4cN8pI3nT6lU4'
@@ -111,7 +112,7 @@ const RegisterBank = () => {
     // In /dashboard you should see a boton of update and the information of the accounts
     // Order files and folders
     // Create new app of santander and change client id and client secret
-    redirect('/santanderLogin');
+    navigate('/santanderLogin');
   };
 
   return (
