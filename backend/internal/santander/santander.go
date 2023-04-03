@@ -18,7 +18,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const redirect_uri = "https://tfg-app.netlify.app/"
+const redirect_uri = "https://tfg-app.netlify.app/santanderLogin/"
 const endpoint = "https://apis-sandbox.bancosantander.es/canales-digitales/sb/v2/";
 
 const tokenEndpoint = endpoint + "token";
