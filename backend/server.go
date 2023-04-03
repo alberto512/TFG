@@ -39,7 +39,7 @@ func main() {
 	// Start router, add middleware, add default route and start server
 	router := chi.NewRouter()
 
-	router.Use(cors.Default().Handler(mux))
+	router.Use(cors.Default().Handler)
 
 	router.Use(middleware.Middleware())
 
