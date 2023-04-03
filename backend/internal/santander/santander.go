@@ -18,7 +18,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const redirect_uri = "https://tfg-app.netlify.app/santanderLogin/"
+const redirectUri = "https://tfg-app.netlify.app/santanderLogin/"
 const endpoint = "https://apis-sandbox.bancosantander.es/canales-digitales/sb/v2/";
 
 const tokenEndpoint = endpoint + "token";
@@ -86,7 +86,7 @@ func GetTokenWithCode(userId string, code string) (string, error) {
 	// Create body
 	body := url.Values{}
 	body.Set("grant_type", "authorization_code")
-	body.Set("redirect_uri", redirect_uri)
+	body.Set("redirect_uri", redirectUri)
 	body.Set("code", code)
 
 	// Encode the body
