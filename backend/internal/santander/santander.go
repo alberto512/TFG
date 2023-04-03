@@ -4,6 +4,7 @@ import (
 	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -168,6 +169,11 @@ func GetTokenWithRefresh(userId string, refresh string) (string, error) {
 	}
 	if res.StatusCode != http.StatusOK {
 		log.Printf("Error: Response %d", res.StatusCode)
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("Error: body %s", body)
         return "", fmt.Errorf("error %d", res.StatusCode)
 	}
 	defer res.Body.Close()
