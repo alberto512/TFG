@@ -6,11 +6,10 @@ const Register = () => {
   const { token, onRegister } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('');
+  const [role, setRole] = useState('ADMIN');
 
   const registerHandler = () => {
-    console.log(username, password, role);
-    //onRegister(username, password, role);
+    onRegister(username, password, role);
   };
 
   return (
@@ -33,7 +32,7 @@ const Register = () => {
             <option value='USER'>User</option>
           </select>
           <button type='button' onClick={registerHandler}>
-            Sign In
+            Register
           </button>
         </>
       )}
@@ -41,4 +40,4 @@ const Register = () => {
   );
 };
 
-export default Login;
+export default Register;

@@ -3,7 +3,7 @@ import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
 const AuthContext = createContext(null);
-const path = process.env.REACT_APP_BACKEND_URL;
+const path = process.env.BACKEND_URL;
 
 export const useAuth = () => {
   return useContext(AuthContext);
@@ -37,7 +37,7 @@ const AuthProvider = ({ children }) => {
     localStorage.setItem('jwt', JSON.stringify(token));
   }, [token]);
 
-  const login = async (username, password) => {
+  const login = async (username, password, navigationActive = true) => {
     try {
       const response = await axios.post(path, {
         query: `mutation Login($username: String!, $password: String!) {
@@ -55,8 +55,10 @@ const AuthProvider = ({ children }) => {
 
       setToken(response.data.data.login);
 
-      const origin = location.state?.from?.pathname || '/dashboard';
-      navigate(origin);
+      if (navigationActive) {
+        const origin = location.state?.from?.pathname || '/dashboard';
+        navigate(origin);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -64,24 +66,33 @@ const AuthProvider = ({ children }) => {
 
   const register = async (username, password, role) => {
     try {
+      console.log(path);
       const response = await axios.post(path, {
-        query: `mutation Login($username: String!, $password: String!) {
-          login(username: $username, password: $password)
+        query: `mutation CreateUser($username: String!, $password: String!, $role: Role!) {
+          createUser(username: $username, password: $password, role: $role) {
+            id,
+            username,
+            password,
+          }
         }`,
         variables: {
           username,
           password,
+          role,
         },
       });
 
-      if (response.data.data.login === '') {
+      if (response.data.data.createUser.id === '') {
         return;
       }
 
-      setToken(response.data.data.login);
+      login(
+        response.data.data.createUser.username,
+        response.data.data.createUser.password,
+        false
+      );
 
-      const origin = location.state?.from?.pathname || '/dashboard';
-      navigate(origin);
+      navigate('/registerBank');
     } catch (error) {
       console.log(error);
     }
