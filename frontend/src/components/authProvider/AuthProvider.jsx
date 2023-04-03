@@ -66,6 +66,7 @@ const AuthProvider = ({ children }) => {
 
   const register = async (username, password, role) => {
     try {
+      console.log(process.env);
       const response = await axios.post(path, {
         query: `mutation CreateUser($username: String!, $password: String!, $role: Role!) {
           createUser(username: $username, password: $password, role: $role) {
