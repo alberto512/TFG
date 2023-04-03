@@ -7,9 +7,10 @@ import './SantanderLogin.css';
 const SantanderLogin = async () => {
   const { token } = useAuth();
   const [queryParameters] = useSearchParams();
-  const backendUrl = process.env.BACKEND_URL;
-  const santanderUrl = process.env.SANTANDER_URL + 'prestep-authorize';
-  const redirectUri = process.env.FRONTEND_URL + 'santanderLogin/';
+  const backendUrl = process.env.REACT_APP_BACKEND_URL;
+  const santanderUrl =
+    process.env.REACT_APP_SANTANDER_URL + 'prestep-authorize';
+  const redirectUri = process.env.REACT_APP_FRONTEND_URL + 'santanderLogin/';
 
   if (queryParameters.get('code') == null) {
     window.location.href =
@@ -17,7 +18,7 @@ const SantanderLogin = async () => {
       '?redirect_uri=' +
       redirectUri +
       '&response_type=code&client_id=' +
-      process.env.SANTANDER_ID;
+      process.env.REACT_APP_SANTANDER_ID;
   } else {
     const response = await axios.post(
       backendUrl,

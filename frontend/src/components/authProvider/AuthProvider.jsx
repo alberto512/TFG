@@ -3,7 +3,7 @@ import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
 const AuthContext = createContext(null);
-const path = process.env.BACKEND_URL;
+const path = process.env.REACT_APP_BACKEND_URL;
 
 export const useAuth = () => {
   return useContext(AuthContext);
@@ -66,7 +66,6 @@ const AuthProvider = ({ children }) => {
 
   const register = async (username, password, role) => {
     try {
-      console.log(process.env);
       const response = await axios.post(path, {
         query: `mutation CreateUser($username: String!, $password: String!, $role: Role!) {
           createUser(username: $username, password: $password, role: $role) {
