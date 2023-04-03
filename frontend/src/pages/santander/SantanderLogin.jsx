@@ -19,8 +19,8 @@ const SantanderLogin = () => {
         backendUrl,
         {
           query: `query GetTokenWithCode($code: String!) {
-          getTokenWithCode(code: $code)
-        }`,
+            getTokenWithCode(code: $code)
+          }`,
           variables: {
             code: queryParameters.get('code'),
           },
