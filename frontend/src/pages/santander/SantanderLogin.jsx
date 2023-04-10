@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from 'components/authProvider/AuthProvider';
 import axios from 'axios';
 import './SantanderLogin.css';
 
 const SantanderLogin = () => {
   const { token } = useAuth();
+  const navigate = useNavigate();
   const [queryParameters] = useSearchParams();
   const backendUrl = process.env.REACT_APP_BACKEND_URL;
   const santanderUrlPrestep =
@@ -14,7 +15,6 @@ const SantanderLogin = () => {
     process.env.REACT_APP_SANTANDER_URL + 'v2/authorize';
   const redirectUri = process.env.REACT_APP_FRONTEND_URL + 'santanderLogin/';
   const [isToken, setIsToken] = useState(false);
-  const [activeToken, setActiveToken] = useState(false);
 
   const body = {
     access: {
@@ -47,29 +47,34 @@ const SantanderLogin = () => {
           },
         }
       );
-
-      await axios
-        .post(
-          santanderUrlAuthorize +
-            '?redirect_uri=' +
-            redirectUri +
-            '&response_type=code&client_id=' +
-            process.env.REACT_APP_SANTANDER_ID,
-          body,
-          {
-            headers: {
-              Authorization: 'Bearer ' + response.data.data.getTokenWithCode,
-              'content-type': 'application/json',
-              accept: 'application/json',
-            },
-          }
-        )
-        .then((_response) => {})
-        .catch((error) => {
-          if (error.response.status === 403) {
-            window.location.href = error.response.data.redirect_uri;
-          }
-        });
+      if (localStorage.getItem('Authorize')) {
+        localStorage.setItem('Authorize', false);
+        navigate('/dashboard');
+      } else {
+        localStorage.setItem('Authorize', true);
+        await axios
+          .post(
+            santanderUrlAuthorize +
+              '?redirect_uri=' +
+              redirectUri +
+              '&response_type=code&client_id=' +
+              process.env.REACT_APP_SANTANDER_ID,
+            body,
+            {
+              headers: {
+                Authorization: 'Bearer ' + response.data.data.getTokenWithCode,
+                'content-type': 'application/json',
+                accept: 'application/json',
+              },
+            }
+          )
+          .then((_response) => {})
+          .catch((error) => {
+            if (error.response.status === 403) {
+              window.location.href = error.response.data.redirect_uri;
+            }
+          });
+      }
       setIsToken(true);
     };
 
@@ -81,7 +86,7 @@ const SantanderLogin = () => {
         '&response_type=code&client_id=' +
         process.env.REACT_APP_SANTANDER_ID;
     } else {
-      if (!isToken && activeToken) {
+      if (!isToken) {
         getToken();
       }
     }
@@ -93,18 +98,9 @@ const SantanderLogin = () => {
     redirectUri,
     santanderUrlPrestep,
     santanderUrlAuthorize,
-    activeToken,
   ]);
 
-  const auxFunc = () => {
-    setActiveToken(true);
-  };
-
-  return (
-    <>
-      <button onClick={auxFunc}>Hola</button>
-    </>
-  );
+  return <></>;
 };
 
 export default SantanderLogin;
