@@ -112,7 +112,7 @@ func GetToken(userId string) (error) {
     cursor.Next(mongo.GetCtx())
 
     if err = cursor.Decode(&userToken); err != nil {
-        log.Printf("Error: Decoding user token")
+        log.Printf("Error: Decoding user token %s", err)
         return err
     }
 
