@@ -111,7 +111,6 @@ const RegisterBank = () => {
     // If tokens are correct redirect to /dashboard
     // In /dashboard you should see a boton of update and the information of the accounts
     // Order files and folders
-    // Create new app of santander and change client id and client secret
     navigate('/santanderLogin');
   };
 

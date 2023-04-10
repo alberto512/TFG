@@ -8,10 +8,25 @@ const SantanderLogin = () => {
   const { token } = useAuth();
   const [queryParameters] = useSearchParams();
   const backendUrl = process.env.REACT_APP_BACKEND_URL;
-  const santanderUrl =
+  const santanderUrlPrestep =
     process.env.REACT_APP_SANTANDER_URL + 'prestep-authorize';
+  const santanderUrlAuthorize =
+    process.env.REACT_APP_SANTANDER_URL + 'v2/authorize';
   const redirectUri = process.env.REACT_APP_FRONTEND_URL + 'santanderLogin/';
   const [isToken, setIsToken] = useState(false);
+  const [activeToken, setActiveToken] = useState(false);
+
+  const body = {
+    access: {
+      accounts: [],
+      balances: [],
+      transactions: [],
+      cards_accounts: [],
+      cards_balances: [],
+      cards_transactions: [],
+    },
+    recurringIndicator: true,
+  };
 
   useEffect(() => {
     const getToken = async () => {
@@ -32,25 +47,64 @@ const SantanderLogin = () => {
           },
         }
       );
-      console.log(response);
+
+      await axios
+        .post(
+          santanderUrlAuthorize +
+            '?redirect_uri=' +
+            redirectUri +
+            '&response_type=code&client_id=' +
+            process.env.REACT_APP_SANTANDER_ID,
+          body,
+          {
+            headers: {
+              Authorization: 'Bearer ' + response.data.data.getTokenWithCode,
+              'content-type': 'application/json',
+              accept: 'application/json',
+            },
+          }
+        )
+        .then((_response) => {})
+        .catch((error) => {
+          if (error.response.status === 403) {
+            window.location.href = error.response.data.redirect_uri;
+          }
+        });
       setIsToken(true);
     };
 
     if (queryParameters.get('code') == null) {
       window.location.href =
-        santanderUrl +
+        santanderUrlPrestep +
         '?redirect_uri=' +
         redirectUri +
         '&response_type=code&client_id=' +
         process.env.REACT_APP_SANTANDER_ID;
     } else {
-      if (!isToken) {
+      if (!isToken && activeToken) {
         getToken();
       }
     }
-  }, [queryParameters, token, isToken, backendUrl, redirectUri, santanderUrl]);
+  }, [
+    queryParameters,
+    token,
+    isToken,
+    backendUrl,
+    redirectUri,
+    santanderUrlPrestep,
+    santanderUrlAuthorize,
+    activeToken,
+  ]);
 
-  return <></>;
+  const auxFunc = () => {
+    setActiveToken(true);
+  };
+
+  return (
+    <>
+      <button onClick={auxFunc}>Hola</button>
+    </>
+  );
 };
 
 export default SantanderLogin;
