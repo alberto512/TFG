@@ -323,7 +323,7 @@ func (r *queryResolver) AccountsByToken(ctx context.Context) (string, error) {
 	token, err := santander.GetToken(userAuth.ID)
 	if err == nil {
 		log.Printf("Error: Error retrieving token of user")
-		return "Error", fmt.Errorf("access denied")
+		return "Error", fmt.Errorf("access denied, %s", err)
 	}
 
 	return santander.GetAccounts(token)
