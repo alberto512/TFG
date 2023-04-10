@@ -21,6 +21,7 @@ const redirectUri = "https://tfg-frontend-production.up.railway.app/santanderLog
 const endpoint = "https://apis-sandbox.bancosantander.es/canales-digitales/sb/v2/";
 
 const tokenEndpoint = endpoint + "token";
+const accountsEndpoint = endpoint + "accounts";
 
 type ResponseTokenEndpoint struct {
 	AccessToken		string	`json:"access_token"`
@@ -188,4 +189,43 @@ func GetTokenWithRefresh(userId string, refresh string) (string, error) {
 	}
 
 	return response.AccessToken, nil
+}
+
+func GetAccounts(accessToken string) (error) {
+	log.Printf("Get accounts of user")
+
+	// Create the request
+	req, err := http.NewRequest("GET", accountsEndpoint, nil)
+	if err != nil {
+		log.Printf("Error: Create request")
+        return err
+	}
+	
+	// Add all the headers
+	req.Header.Add("Authorization", accessToken)
+	req.Header.Add("X-IBM-Client-Id", os.Getenv("SANTANDER_ID"))
+	req.Header.Add("accept", "application/json")
+	req.Header.Add("psu_active", "application/json")
+
+	// Make the request
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Printf("Error: Make request")
+        return err
+	}
+	if res.StatusCode != http.StatusOK {
+		log.Printf("Error: Response %d", res.StatusCode)
+        return fmt.Errorf("error %d", res.StatusCode)
+	}
+	defer res.Body.Close()
+
+	// Decode the response
+	response := &ResponseTokenEndpoint{}
+	derr := json.NewDecoder(res.Body).Decode(response)
+	if derr != nil {
+		log.Printf("Error: Decoding response")
+        return err
+	}
+
+	return nil
 }
