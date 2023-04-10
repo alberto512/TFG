@@ -116,7 +116,10 @@ func GetToken(userId string) (error) {
         return err
     }
 
-	log.Printf("Error: Decoding user token %s", userToken)
+	log.Printf("Access token %s", userToken.AccessToken)
+	log.Printf("Refresh token %s", userToken.RefreshToken)
+	log.Printf("Date token %s", userToken.Expires)
+	log.Printf("Time now %s", time.Now())
 
 	return nil
 }
