@@ -39,6 +39,17 @@ type UserToken struct {
 	RefreshToken	string 		`bson:"refreshToken,omitempty"`
 }
 
+type ResponseAccount struct {
+	Iban		string	`json:"iban"`
+	Name  		string 	`json:"name"`
+	Currency	string 	`json:"currency"`
+}
+
+type ResponseAccountsEndpoint struct {
+	AccountList	[]ResponseAccount	`json:"accountList"`
+	RequestId	string				`json:"requestId"`
+}
+
 func saveToken(userId string, token *ResponseTokenEndpoint) (error) {
 	log.Printf("Save token in database")
 
@@ -269,18 +280,14 @@ func GetAccounts(accessToken string) (string, error) {
 	defer res.Body.Close()
 
 	// Decode the response
-	/*response := &ResponseTokenEndpoint{}
+	response := &ResponseAccountsEndpoint{}
 	derr := json.NewDecoder(res.Body).Decode(response)
 	if derr != nil {
 		log.Printf("Error: Decoding response")
-        return err
-	}*/
-	resBody, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		fmt.Printf("client: could not read response body: %s\n", err)
-		return "", fmt.Errorf("error %d", err)
+        return "", err
 	}
-	fmt.Printf("client: response body: %s\n", resBody)
 
-	return string(resBody), nil
+	log.Printf("Accounts %v", response)
+
+	return "", nil
 }
