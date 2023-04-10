@@ -48,6 +48,8 @@ const SantanderLogin = () => {
         }
       );
 
+      console.log('Response: ', response.data.data.getTokenWithCode);
+
       if (JSON.parse(localStorage.getItem('Authorize'))) {
         localStorage.setItem('Authorize', false);
         navigate('/dashboard');
