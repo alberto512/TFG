@@ -11,7 +11,7 @@ const Dashboard = () => {
     const response = await axios.post(
       backendUrl,
       {
-        query: `query accountsByToken`,
+        query: `query { accountsByToken }`,
       },
       {
         headers: {
