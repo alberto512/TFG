@@ -171,11 +171,6 @@ func GetToken(userId string) (string, error) {
         return "", err
     }
 
-	log.Printf("Access token %s", userToken.AccessToken)
-	log.Printf("Refresh token %s", userToken.RefreshToken)
-	log.Printf("Date token %s", userToken.Expires)
-	log.Printf("Time now %s", time.Now())
-
 	if time.Now().After(userToken.Expires) {
 		return getTokenWithRefresh(userId, userToken.RefreshToken)
 	}
@@ -263,6 +258,12 @@ func GetAccounts(accessToken string) (string, error) {
 	}
 	if res.StatusCode != http.StatusOK {
 		log.Printf("Error: Response %d", res.StatusCode)
+		resBody, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			fmt.Printf("client: could not read response body: %s\n", err)
+			return "", fmt.Errorf("error %d", err)
+		}
+		fmt.Printf("client: response body: %s\n", resBody)
         return "", fmt.Errorf("error %d", res.StatusCode)
 	}
 	defer res.Body.Close()
