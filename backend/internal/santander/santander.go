@@ -82,7 +82,7 @@ func saveToken(userId string, token *ResponseTokenEndpoint) (error) {
 }
 
 func GetToken(userId string) (error) {
-	var userToken []UserToken
+	var userToken *UserToken
 
 	log.Printf("Get token by userId")
 
