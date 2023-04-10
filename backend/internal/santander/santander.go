@@ -245,7 +245,7 @@ func GetAccounts(accessToken string) (string, error) {
 	}
 	
 	// Add all the headers
-	req.Header.Add("Authorization", accessToken)
+	req.Header.Add("Authorization", "Bearer " + accessToken)
 	req.Header.Add("X-IBM-Client-Id", os.Getenv("SANTANDER_ID"))
 	req.Header.Add("accept", "application/json")
 	req.Header.Add("psu_active", "1")
