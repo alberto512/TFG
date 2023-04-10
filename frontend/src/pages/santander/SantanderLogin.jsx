@@ -47,10 +47,13 @@ const SantanderLogin = () => {
           },
         }
       );
-      console.log(localStorage.getItem('Authorize'));
-      console.log(localStorage.getItem('Authorize') == false);
+      console.log(JSON.parse(null));
+      console.log(JSON.parse(localStorage.getItem('Authorize')) == false);
       console.log(localStorage.getItem('Authorize') == 'false');
-      if (localStorage.getItem('Authorize')) {
+      if (
+        localStorage.getItem('Authorize') &&
+        localStorage.getItem('Authorize') == 'false'
+      ) {
         localStorage.setItem('Authorize', false);
         navigate('/dashboard');
       } else {
