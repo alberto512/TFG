@@ -81,57 +81,13 @@ func saveToken(userId string, token *ResponseTokenEndpoint) (error) {
 	return nil
 }
 
-func GetToken(userId string) (error) {
-	var userToken *UserToken
-
-	log.Printf("Get token by userId")
-
-	// String id to ObjectId
-	id, err := primitive.ObjectIDFromHex(userId)
-	if err != nil {
-		log.Printf("Error: Convert string to id")
-        return err
-	}
-
-	// Query to get token by userId
-	query := bson.D{
-		{Key: "userId", Value: id},
-	}
-
-	// Empty filter
-    filter := bson.D{}
-
-	// Execute query
-    cursor, err := mongo.Query("santanderTokens", query, filter)
-    if err != nil {
-        log.Printf("Error: Get tokens in db")
-        return err
-    }
-
-    // Decode query
-    cursor.Next(mongo.GetCtx())
-
-    if err = cursor.Decode(&userToken); err != nil {
-        log.Printf("Error: Decoding user token %s", err)
-        return err
-    }
-
-	log.Printf("Access token %s", userToken.AccessToken)
-	log.Printf("Refresh token %s", userToken.RefreshToken)
-	log.Printf("Date token %s", userToken.Expires)
-	log.Printf("Time now %s", time.Now())
-
-	return nil
-}
-
-func GetTokenWithCode(userId string, code string) (string, error) {
-	log.Printf("Get token with code")
+func getTokenWithRefresh(userId string, refresh string) (string, error) {
+	log.Printf("Get token with refresh")
 
 	// Create body
 	body := url.Values{}
-	body.Set("grant_type", "authorization_code")
-	body.Set("redirect_uri", redirectUri)
-	body.Set("code", code)
+	body.Set("grant_type", "refresh_token")
+	body.Set("refresh_token", refresh)
 
 	// Encode the body
 	encodedBody := body.Encode()
@@ -180,13 +136,61 @@ func GetTokenWithCode(userId string, code string) (string, error) {
 	return response.AccessToken, nil
 }
 
-func GetTokenWithRefresh(userId string, refresh string) (string, error) {
-	log.Printf("Get token with refresh")
+func GetToken(userId string) (string, error) {
+	var userToken *UserToken
+
+	log.Printf("Get token by userId")
+
+	// String id to ObjectId
+	id, err := primitive.ObjectIDFromHex(userId)
+	if err != nil {
+		log.Printf("Error: Convert string to id")
+        return "", err
+	}
+
+	// Query to get token by userId
+	query := bson.D{
+		{Key: "userId", Value: id},
+	}
+
+	// Empty filter
+    filter := bson.D{}
+
+	// Execute query
+    cursor, err := mongo.Query("santanderTokens", query, filter)
+    if err != nil {
+        log.Printf("Error: Get tokens in db")
+        return "", err
+    }
+
+    // Decode query
+    cursor.Next(mongo.GetCtx())
+
+    if err = cursor.Decode(&userToken); err != nil {
+        log.Printf("Error: Decoding user token %s", err)
+        return "", err
+    }
+
+	log.Printf("Access token %s", userToken.AccessToken)
+	log.Printf("Refresh token %s", userToken.RefreshToken)
+	log.Printf("Date token %s", userToken.Expires)
+	log.Printf("Time now %s", time.Now())
+
+	if time.Now().After(userToken.Expires) {
+		return getTokenWithRefresh(userId, userToken.RefreshToken)
+	}
+
+	return userToken.AccessToken, nil
+}
+
+func GetTokenWithCode(userId string, code string) (string, error) {
+	log.Printf("Get token with code")
 
 	// Create body
 	body := url.Values{}
-	body.Set("grant_type", "refresh_token")
-	body.Set("refresh_token", refresh)
+	body.Set("grant_type", "authorization_code")
+	body.Set("redirect_uri", redirectUri)
+	body.Set("code", code)
 
 	// Encode the body
 	encodedBody := body.Encode()
@@ -277,5 +281,5 @@ func GetAccounts(accessToken string) (string, error) {
 	}
 	fmt.Printf("client: response body: %s\n", resBody)
 
-	return "", nil
+	return string(resBody), nil
 }
