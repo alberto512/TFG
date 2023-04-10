@@ -4,6 +4,7 @@ import (
 	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -76,6 +77,46 @@ func saveToken(userId string, token *ResponseTokenEndpoint) (error) {
 		log.Printf("Error: Save operation in db")
 		return err
 	}
+
+	return nil
+}
+
+func GetToken(userId string) (error) {
+	var userToken []UserToken
+
+	log.Printf("Get token by userId")
+
+	// String id to ObjectId
+	id, err := primitive.ObjectIDFromHex(userId)
+	if err != nil {
+		log.Printf("Error: Convert string to id")
+        return err
+	}
+
+	// Query to get token by userId
+	query := bson.D{
+		{Key: "userId", Value: id},
+	}
+
+	// Empty filter
+    filter := bson.D{}
+
+	// Execute query
+    cursor, err := mongo.Query("santanderTokens", query, filter)
+    if err != nil {
+        log.Printf("Error: Get tokens in db")
+        return err
+    }
+
+    // Decode query
+    cursor.Next(mongo.GetCtx())
+
+    if err = cursor.Decode(&userToken); err != nil {
+        log.Printf("Error: Decoding user token")
+        return err
+    }
+
+	log.Printf("Error: Decoding user token %s", userToken)
 
 	return nil
 }
@@ -191,41 +232,47 @@ func GetTokenWithRefresh(userId string, refresh string) (string, error) {
 	return response.AccessToken, nil
 }
 
-func GetAccounts(accessToken string) (error) {
+func GetAccounts(accessToken string) (string, error) {
 	log.Printf("Get accounts of user")
 
 	// Create the request
 	req, err := http.NewRequest("GET", accountsEndpoint, nil)
 	if err != nil {
 		log.Printf("Error: Create request")
-        return err
+        return "", err
 	}
 	
 	// Add all the headers
 	req.Header.Add("Authorization", accessToken)
 	req.Header.Add("X-IBM-Client-Id", os.Getenv("SANTANDER_ID"))
 	req.Header.Add("accept", "application/json")
-	req.Header.Add("psu_active", "application/json")
+	req.Header.Add("psu_active", "1")
 
 	// Make the request
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Printf("Error: Make request")
-        return err
+        return "", err
 	}
 	if res.StatusCode != http.StatusOK {
 		log.Printf("Error: Response %d", res.StatusCode)
-        return fmt.Errorf("error %d", res.StatusCode)
+        return "", fmt.Errorf("error %d", res.StatusCode)
 	}
 	defer res.Body.Close()
 
 	// Decode the response
-	response := &ResponseTokenEndpoint{}
+	/*response := &ResponseTokenEndpoint{}
 	derr := json.NewDecoder(res.Body).Decode(response)
 	if derr != nil {
 		log.Printf("Error: Decoding response")
         return err
+	}*/
+	resBody, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		fmt.Printf("client: could not read response body: %s\n", err)
+		return "", fmt.Errorf("error %d", err)
 	}
+	fmt.Printf("client: response body: %s\n", resBody)
 
-	return nil
+	return "", nil
 }

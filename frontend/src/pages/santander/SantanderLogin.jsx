@@ -33,8 +33,8 @@ const SantanderLogin = () => {
       const response = await axios.post(
         backendUrl,
         {
-          query: `query GetTokenWithCode($code: String!) {
-            getTokenWithCode(code: $code)
+          query: `query TokenWithCode($code: String!) {
+            tokenWithCode(code: $code)
           }`,
           variables: {
             code: queryParameters.get('code'),
@@ -47,8 +47,6 @@ const SantanderLogin = () => {
           },
         }
       );
-
-      console.log('Response: ', response.data.data.getTokenWithCode);
 
       if (JSON.parse(localStorage.getItem('Authorize'))) {
         localStorage.setItem('Authorize', false);
@@ -65,7 +63,7 @@ const SantanderLogin = () => {
             body,
             {
               headers: {
-                Authorization: 'Bearer ' + response.data.data.getTokenWithCode,
+                Authorization: 'Bearer ' + response.data.data.tokenWithCode,
                 'content-type': 'application/json',
                 accept: 'application/json',
               },

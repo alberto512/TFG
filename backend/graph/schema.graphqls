@@ -10,8 +10,9 @@ type Mutation {
 }
 
 type Query {
-  getTokenWithCode(code: String!): String!
-  getTokenWithRefresh(refresh: String!): String!
+  tokenWithCode(code: String!): String!
+  tokenWithRefresh(refresh: String!): String!
+  accountsByToken: String!
   users: [User!]!
   userById(id: ID!): User!
   userByToken: User!

@@ -9,6 +9,7 @@ const RegisterBank = () => {
     // If tokens are correct redirect to /dashboard
     // In /dashboard you should see a boton of update and the information of the accounts
     // Order files and folders
+    // Review imports
     navigate('/santanderLogin');
   };
 

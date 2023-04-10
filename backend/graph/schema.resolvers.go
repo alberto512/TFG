@@ -291,8 +291,8 @@ func (r *mutationResolver) DeleteOperation(ctx context.Context, id string) (stri
 	return "Deletion success", nil
 }
 
-// GetTokenWithCode is the resolver for the getTokenWithCode field.
-func (r *queryResolver) GetTokenWithCode(ctx context.Context, code string) (string, error) {
+// TokenWithCode is the resolver for the tokenWithCode field.
+func (r *queryResolver) TokenWithCode(ctx context.Context, code string) (string, error) {
 	// Set variables
 	var userAuth *users.User
 
@@ -307,8 +307,8 @@ func (r *queryResolver) GetTokenWithCode(ctx context.Context, code string) (stri
 	return santander.GetTokenWithCode(userAuth.ID, code)
 }
 
-// GetTokenWithRefresh is the resolver for the getTokenWithRefresh field.
-func (r *queryResolver) GetTokenWithRefresh(ctx context.Context, refresh string) (string, error) {
+// TokenWithRefresh is the resolver for the tokenWithRefresh field.
+func (r *queryResolver) TokenWithRefresh(ctx context.Context, refresh string) (string, error) {
 	// Set variables
 	var userAuth *users.User
 
@@ -321,6 +321,24 @@ func (r *queryResolver) GetTokenWithRefresh(ctx context.Context, refresh string)
 	}
 
 	return santander.GetTokenWithRefresh(userAuth.ID, refresh)
+}
+
+// AccountsByToken is the resolver for the accountsByToken field.
+func (r *queryResolver) AccountsByToken(ctx context.Context) (string, error) {
+	// Set variables
+	var userAuth *users.User
+
+	log.Printf("Route: GetTokenWithRefresh")
+
+	// Get user from context
+	if userAuth = middleware.ForContext(ctx); userAuth == nil {
+		log.Printf("Error: Access denied")
+		return "Error", fmt.Errorf("access denied")
+	}
+
+	santander.GetToken(userAuth.ID)
+
+	return "", nil
 }
 
 // Users is the resolver for the users field.

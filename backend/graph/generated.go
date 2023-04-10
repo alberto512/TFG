@@ -67,12 +67,13 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		GetTokenWithCode     func(childComplexity int, code string) int
-		GetTokenWithRefresh  func(childComplexity int, refresh string) int
+		AccountsByToken      func(childComplexity int) int
 		OperationByID        func(childComplexity int, id string) int
 		Operations           func(childComplexity int) int
 		OperationsByCategory func(childComplexity int, category string) int
 		OperationsByDate     func(childComplexity int, initDate int, endDate int) int
+		TokenWithCode        func(childComplexity int, code string) int
+		TokenWithRefresh     func(childComplexity int, refresh string) int
 		UserByID             func(childComplexity int, id string) int
 		UserByToken          func(childComplexity int) int
 		Users                func(childComplexity int) int
@@ -98,8 +99,9 @@ type MutationResolver interface {
 	DeleteOperation(ctx context.Context, id string) (string, error)
 }
 type QueryResolver interface {
-	GetTokenWithCode(ctx context.Context, code string) (string, error)
-	GetTokenWithRefresh(ctx context.Context, refresh string) (string, error)
+	TokenWithCode(ctx context.Context, code string) (string, error)
+	TokenWithRefresh(ctx context.Context, refresh string) (string, error)
+	AccountsByToken(ctx context.Context) (string, error)
 	Users(ctx context.Context) ([]*model.User, error)
 	UserByID(ctx context.Context, id string) (*model.User, error)
 	UserByToken(ctx context.Context) (*model.User, error)
@@ -265,29 +267,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Operation.UserID(childComplexity), true
 
-	case "Query.getTokenWithCode":
-		if e.complexity.Query.GetTokenWithCode == nil {
+	case "Query.accountsByToken":
+		if e.complexity.Query.AccountsByToken == nil {
 			break
 		}
 
-		args, err := ec.field_Query_getTokenWithCode_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.GetTokenWithCode(childComplexity, args["code"].(string)), true
-
-	case "Query.getTokenWithRefresh":
-		if e.complexity.Query.GetTokenWithRefresh == nil {
-			break
-		}
-
-		args, err := ec.field_Query_getTokenWithRefresh_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.GetTokenWithRefresh(childComplexity, args["refresh"].(string)), true
+		return e.complexity.Query.AccountsByToken(childComplexity), true
 
 	case "Query.operationById":
 		if e.complexity.Query.OperationByID == nil {
@@ -331,6 +316,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.OperationsByDate(childComplexity, args["initDate"].(int), args["endDate"].(int)), true
+
+	case "Query.tokenWithCode":
+		if e.complexity.Query.TokenWithCode == nil {
+			break
+		}
+
+		args, err := ec.field_Query_tokenWithCode_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.TokenWithCode(childComplexity, args["code"].(string)), true
+
+	case "Query.tokenWithRefresh":
+		if e.complexity.Query.TokenWithRefresh == nil {
+			break
+		}
+
+		args, err := ec.field_Query_tokenWithRefresh_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.TokenWithRefresh(childComplexity, args["refresh"].(string)), true
 
 	case "Query.userById":
 		if e.complexity.Query.UserByID == nil {
@@ -653,36 +662,6 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_getTokenWithCode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["code"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("code"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["code"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Query_getTokenWithRefresh_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["refresh"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("refresh"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["refresh"] = arg0
-	return args, nil
-}
-
 func (ec *executionContext) field_Query_operationById_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -734,6 +713,36 @@ func (ec *executionContext) field_Query_operationsByDate_args(ctx context.Contex
 		}
 	}
 	args["endDate"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_tokenWithCode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["code"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("code"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["code"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_tokenWithRefresh_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["refresh"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("refresh"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["refresh"] = arg0
 	return args, nil
 }
 
@@ -1538,8 +1547,8 @@ func (ec *executionContext) fieldContext_Operation_userId(ctx context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_getTokenWithCode(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_getTokenWithCode(ctx, field)
+func (ec *executionContext) _Query_tokenWithCode(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_tokenWithCode(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1552,7 +1561,7 @@ func (ec *executionContext) _Query_getTokenWithCode(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetTokenWithCode(rctx, fc.Args["code"].(string))
+		return ec.resolvers.Query().TokenWithCode(rctx, fc.Args["code"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1568,7 +1577,7 @@ func (ec *executionContext) _Query_getTokenWithCode(ctx context.Context, field g
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_getTokenWithCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_tokenWithCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -1585,15 +1594,15 @@ func (ec *executionContext) fieldContext_Query_getTokenWithCode(ctx context.Cont
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_getTokenWithCode_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_tokenWithCode_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_getTokenWithRefresh(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_getTokenWithRefresh(ctx, field)
+func (ec *executionContext) _Query_tokenWithRefresh(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_tokenWithRefresh(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1606,7 +1615,7 @@ func (ec *executionContext) _Query_getTokenWithRefresh(ctx context.Context, fiel
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetTokenWithRefresh(rctx, fc.Args["refresh"].(string))
+		return ec.resolvers.Query().TokenWithRefresh(rctx, fc.Args["refresh"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1622,7 +1631,7 @@ func (ec *executionContext) _Query_getTokenWithRefresh(ctx context.Context, fiel
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_getTokenWithRefresh(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_tokenWithRefresh(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -1639,9 +1648,52 @@ func (ec *executionContext) fieldContext_Query_getTokenWithRefresh(ctx context.C
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_getTokenWithRefresh_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_tokenWithRefresh_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_accountsByToken(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_accountsByToken(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().AccountsByToken(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_accountsByToken(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
 	}
 	return fc, nil
 }
@@ -4492,7 +4544,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
-		case "getTokenWithCode":
+		case "tokenWithCode":
 			field := field
 
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
@@ -4501,7 +4553,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_getTokenWithCode(ctx, field)
+				res = ec._Query_tokenWithCode(ctx, field)
 				return res
 			}
 
@@ -4512,7 +4564,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
-		case "getTokenWithRefresh":
+		case "tokenWithRefresh":
 			field := field
 
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
@@ -4521,7 +4573,27 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_getTokenWithRefresh(ctx, field)
+				res = ec._Query_tokenWithRefresh(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "accountsByToken":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_accountsByToken(ctx, field)
 				return res
 			}
 
