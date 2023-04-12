@@ -27,15 +27,16 @@ const Dashboard = () => {
     const accounts = [];
 
     for (const account in responseDecoded) {
-      console.log(responseDecoded[account]);
       accounts.push({
-        iban: responseDecoded[account][0].iban,
-        type: responseDecoded[account][0].name,
+        iban: responseDecoded[account][0].account.iban,
+        type: responseDecoded[account][0].account.name,
         currency: responseDecoded[account][0].currency,
         ammount: responseDecoded[account][0].account.balance.amount,
         transactions: responseDecoded[account][1].account.transactions,
       });
     }
+
+    console.log(accounts);
 
     setAccounts(accounts);
   };
