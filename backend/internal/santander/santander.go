@@ -302,6 +302,7 @@ func GetAccount(accessToken string, iban string) (string, error) {
 	
 	// Add all the headers
 	req2.Header.Add("Authorization", "Bearer " + accessToken)
+	log.Printf("X-IBM-Client-Id %s", os.Getenv("SANTANDER_ID"))
 	req2.Header.Add("X-IBM-Client-Id", os.Getenv("SANTANDER_ID"))
 	req2.Header.Add("content-type", "application/json")
 	req2.Header.Add("accept", "application/json")
