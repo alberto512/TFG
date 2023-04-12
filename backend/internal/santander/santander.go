@@ -282,9 +282,9 @@ func GetAccount(accessToken string, iban string) (string, error) {
 		os.Exit(1)
 	}
 
-	var response [2][]byte
+	var response []string
 	log.Printf("Response 1 %s", response)
-	response[0] = resBody
+	response[0] = string(resBody)
 	log.Printf("Response 2 %s", response)
 
 	// Create body
@@ -329,7 +329,7 @@ func GetAccount(accessToken string, iban string) (string, error) {
 		os.Exit(1)
 	}
 
-	response[1] = resBody
+	response[1] = string(resBody)
 	log.Printf("Response 2 %s", response)
 
 	// Decode the response
@@ -348,16 +348,7 @@ func GetAccount(accessToken string, iban string) (string, error) {
     }
 	*/
 
-	out, err := json.Marshal(response)
-    if err != nil {
-        panic(err)
-    }
-
-	log.Printf("Response 3 %s", out)
-
-	log.Printf("Response 4 %s", string(out))
-
-	return string(out), nil
+	return strings.Join(response, ","), nil
 }
 
 func GetAccounts(accessToken string) (string, error) {
