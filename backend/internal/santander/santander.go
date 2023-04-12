@@ -1,6 +1,7 @@
 package santander
 
 import (
+	"bytes"
 	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -286,7 +287,6 @@ func GetAccount(accessToken string, iban string) (string, error) {
 	response[0] = resBody
 
 	// Create body
-	/*
 	body := []byte(`{
 		"movement": "BOTH",
 		"date_to": "2023-04-12",
@@ -294,12 +294,12 @@ func GetAccount(accessToken string, iban string) (string, error) {
 		"amount_to": 100000000,
 		"amount_from": 0,
 		"order": "A"
-	}`)*/
-
+	}`)
+/*
 	payload := strings.NewReader("{\"movement\":\"BOTH\",\"date_to\":\"2023-04-12\",\"date_from\":\"2023-01-15\",\"amount_to\":100000000,\"amount_from\":0,\"order\":\"A\"}")
-
+	*/
 	// Create the request
-	req, err = http.NewRequest("POST", movementsEndpoint, payload)
+	req, err = http.NewRequest("POST", movementsEndpoint + "/" + iban, bytes.NewBuffer(body))
 	if err != nil {
 		log.Printf("Error: Create request")
         return "", err
