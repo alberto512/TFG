@@ -1,6 +1,7 @@
 package santander
 
 import (
+	"bytes"
 	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -283,19 +284,17 @@ func GetAccount(accessToken string, iban string) (string, error) {
 	fmt.Printf("client: response body: %s\n", resBody)
 
 	// Create body
-	body := url.Values{}
-	body.Set("movement", "BOTH")
-	body.Set("date_to", "2023-04-12")
-	body.Set("date_from", "2023-01-15")
-	body.Set("amount_to", "100000000")
-	body.Set("amount_from", "0")
-	body.Set("order", "A")
-
-	// Encode the body
-	encodedBody := body.Encode()
+	body := []byte(`{
+		"movement": "BOTH",
+		"date_to": "2023-04-12",
+		"date_from": "2023-01-15",
+		"amount_to": 100000000,
+		"amount_from": 0,
+		"order": "A"
+	}`)
 
 	// Create the request
-	req, err = http.NewRequest("POST", tokenEndpoint, strings.NewReader(encodedBody))
+	req, err = http.NewRequest("POST", tokenEndpoint, bytes.NewBuffer(body))
 	if err != nil {
 		log.Printf("Error: Create request")
         return "", err
@@ -304,6 +303,7 @@ func GetAccount(accessToken string, iban string) (string, error) {
 	// Add all the headers
 	req.Header.Add("Authorization", "Bearer " + accessToken)
 	req.Header.Add("X-IBM-Client-Id", os.Getenv("SANTANDER_ID"))
+	req.Header.Add("content-type", "application/json")
 	req.Header.Add("accept", "application/json")
 	req.Header.Add("psu_active", "1")
 
