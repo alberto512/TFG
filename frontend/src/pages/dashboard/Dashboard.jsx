@@ -32,7 +32,7 @@ const Dashboard = () => {
         iban: responseDecoded[account][0].iban,
         type: responseDecoded[account][0].name,
         currency: responseDecoded[account][0].currency,
-        ammount: responseDecoded[account][0].balance.amount,
+        ammount: responseDecoded[account][0].account.balance.amount,
         transactions: responseDecoded[account][1].account.transactions,
       });
     }
