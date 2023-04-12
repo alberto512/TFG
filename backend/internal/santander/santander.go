@@ -281,10 +281,11 @@ func GetAccount(accessToken string, iban string) (string, error) {
 		fmt.Printf("client: could not read response body: %s\n", err)
 		os.Exit(1)
 	}
-	fmt.Printf("client: response body: %s\n", resBody)
 
 	var response [2][]byte
+	log.Printf("Response 1 %s", response)
 	response[0] = resBody
+	log.Printf("Response 2 %s", response)
 
 	// Create body
 	body := []byte(`{
@@ -295,9 +296,7 @@ func GetAccount(accessToken string, iban string) (string, error) {
 		"amount_from": 0,
 		"order": "A"
 	}`)
-/*
-	payload := strings.NewReader("{\"movement\":\"BOTH\",\"date_to\":\"2023-04-12\",\"date_from\":\"2023-01-15\",\"amount_to\":100000000,\"amount_from\":0,\"order\":\"A\"}")
-	*/
+
 	// Create the request
 	req, err = http.NewRequest("POST", movementsEndpoint + "/" + iban, bytes.NewBuffer(body))
 	if err != nil {
@@ -320,12 +319,6 @@ func GetAccount(accessToken string, iban string) (string, error) {
 	}
 	if res.StatusCode != http.StatusOK {
 		log.Printf("Error: Response %d", res.StatusCode)
-		resBody, err = ioutil.ReadAll(res.Body)
-		if err != nil {
-			fmt.Printf("client: could not read response body: %s\n", err)
-			os.Exit(1)
-		}
-		fmt.Printf("client: response body: %s\n", resBody)
         return "", fmt.Errorf("error %d", res.StatusCode)
 	}
 	defer res.Body.Close()
@@ -335,9 +328,9 @@ func GetAccount(accessToken string, iban string) (string, error) {
 		fmt.Printf("client: could not read response body: %s\n", err)
 		os.Exit(1)
 	}
-	fmt.Printf("client: response body: %s\n", resBody)
 
 	response[1] = resBody
+	log.Printf("Response 2 %s", response)
 
 	// Decode the response
 	/*
@@ -399,18 +392,22 @@ func GetAccounts(accessToken string) (string, error) {
         return "", err
 	}
 
-	log.Printf("Accounts %v", response)
-
 	var resFinal [2]string
+	log.Printf("Response 11 %s", resFinal)
 
 	for index, element := range response.AccountList {
 		resFinal[index], _ = GetAccount(accessToken, element.Iban)
+		log.Printf("Response 12 %s", resFinal)
 	}
+
+	log.Printf("Response 13 %s", resFinal)
 
 	out, err := json.Marshal(resFinal)
     if err != nil {
         panic(err)
     }
+
+	log.Printf("Response 14 %s", string(out))
 
 	return string(out), nil
 }
