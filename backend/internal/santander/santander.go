@@ -283,9 +283,7 @@ func GetAccount(accessToken string, iban string) (string, error) {
 	}
 
 	var response [2]string
-	log.Printf("Response 1 %s", response)
 	response[0] = string(resBody)
-	log.Printf("Response 2 %s", response)
 
 	// Create body
 	body := []byte(`{
@@ -330,7 +328,6 @@ func GetAccount(accessToken string, iban string) (string, error) {
 	}
 
 	response[1] = string(resBody)
-	log.Printf("Response 3 %s", response)
 
 	// Decode the response
 	/*
@@ -388,14 +385,13 @@ func GetAccounts(accessToken string) (string, error) {
 	}
 
 	var resFinal [2]string
-	log.Printf("Response 11 %s", resFinal)
 
 	for index, element := range response.AccountList {
-		resFinal[index], _ = GetAccount(accessToken, element.Iban)
-		log.Printf("Response 12 %s", resFinal[index])
+		arrayString, _ := GetAccount(accessToken, element.Iban)
+		resFinal[index] = "[" + arrayString + "]"
 	}
 
-	log.Printf("Response 13 %s", resFinal)
+	responseFinal := "[" + strings.Join(resFinal[:], ",") + "]"
 
-	return strings.Join(resFinal[:], ","), nil
+	return responseFinal, nil
 }
