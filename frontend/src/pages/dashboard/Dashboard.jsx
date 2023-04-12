@@ -51,7 +51,7 @@ const Dashboard = () => {
       <div>Authenticated</div>
       <ul>
         {accounts.map((account) => (
-          <li>
+          <li key={account.iban}>
             <span>
               {account.iban} | {account.type} | {account.currency} |{' '}
               {account.ammount}
