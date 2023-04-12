@@ -30,7 +30,7 @@ const Dashboard = () => {
       accounts.push({
         iban: responseDecoded[account][0].account.iban,
         type: responseDecoded[account][0].account.name,
-        currency: responseDecoded[account][0].currency,
+        currency: responseDecoded[account][0].account.currency,
         ammount: responseDecoded[account][0].account.balance.amount,
         transactions: responseDecoded[account][1].account.transactions,
       });
