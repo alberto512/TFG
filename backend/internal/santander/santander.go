@@ -330,7 +330,7 @@ func GetAccount(accessToken string, iban string) (string, error) {
 	}
 
 	response[1] = string(resBody)
-	log.Printf("Response 2 %s", response)
+	log.Printf("Response 3 %s", response)
 
 	// Decode the response
 	/*
@@ -397,12 +397,5 @@ func GetAccounts(accessToken string) (string, error) {
 
 	log.Printf("Response 13 %s", resFinal)
 
-	out, err := json.Marshal(resFinal)
-    if err != nil {
-        panic(err)
-    }
-
-	log.Printf("Response 14 %s", string(out))
-
-	return string(out), nil
+	return strings.Join(resFinal[:], ","), nil
 }
