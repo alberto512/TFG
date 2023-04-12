@@ -4,7 +4,6 @@ import (
 	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -269,12 +268,6 @@ func GetAccounts(accessToken string) (string, error) {
 	}
 	if res.StatusCode != http.StatusOK {
 		log.Printf("Error: Response %d", res.StatusCode)
-		resBody, err := ioutil.ReadAll(res.Body)
-		if err != nil {
-			fmt.Printf("client: could not read response body: %s\n", err)
-			return "", fmt.Errorf("error %d", err)
-		}
-		fmt.Printf("client: response body: %s\n", resBody)
         return "", fmt.Errorf("error %d", res.StatusCode)
 	}
 	defer res.Body.Close()
@@ -288,6 +281,10 @@ func GetAccounts(accessToken string) (string, error) {
 	}
 
 	log.Printf("Accounts %v", response)
+	out, err := json.Marshal(response)
+    if err != nil {
+        panic(err)
+    }
 
-	return "", nil
+	return string(out), nil
 }
