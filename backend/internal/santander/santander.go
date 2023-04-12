@@ -249,6 +249,7 @@ func GetTokenWithCode(userId string, code string) (string, error) {
 
 func GetAccount(accessToken string, iban string) (string, error) {
 	log.Printf("Get account of user")
+	
 
 	// Create the request
 	req, err := http.NewRequest("GET", accountsEndpoint + "/" + iban + "?withBalance=true", nil)
@@ -281,6 +282,9 @@ func GetAccount(accessToken string, iban string) (string, error) {
 		os.Exit(1)
 	}
 	fmt.Printf("client: response body: %s\n", resBody)
+
+	var response [2][]byte
+	response[0] = resBody
 
 	// Create body
 	body := []byte(`{
@@ -331,6 +335,8 @@ func GetAccount(accessToken string, iban string) (string, error) {
 	}
 	fmt.Printf("client: response body: %s\n", resBody)
 
+	response[1] = resBody
+
 	// Decode the response
 	/*
 	response := &ResponseAccountsEndpoint{}
@@ -347,7 +353,12 @@ func GetAccount(accessToken string, iban string) (string, error) {
     }
 	*/
 
-	return "", nil
+	out, err := json.Marshal(response)
+    if err != nil {
+        panic(err)
+    }
+
+	return string(out), nil
 }
 
 func GetAccounts(accessToken string) (string, error) {
@@ -387,14 +398,17 @@ func GetAccounts(accessToken string) (string, error) {
 	}
 
 	log.Printf("Accounts %v", response)
-	out, err := json.Marshal(response)
+	
+	var resFinal [2]string
+
+	for index, element := range response.AccountList {
+		resFinal[index], _ = GetAccount(accessToken, element.Iban)
+	}
+
+	out, err := json.Marshal(resFinal)
     if err != nil {
         panic(err)
     }
-
-	for _, element := range response.AccountList {
-		GetAccount(accessToken, element.Iban)
-	}
 
 	return string(out), nil
 }
