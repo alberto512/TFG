@@ -353,6 +353,10 @@ func GetAccount(accessToken string, iban string) (string, error) {
         panic(err)
     }
 
+	log.Printf("Response 3 %s", out)
+
+	log.Printf("Response 4 %s", string(out))
+
 	return string(out), nil
 }
 
@@ -397,7 +401,7 @@ func GetAccounts(accessToken string) (string, error) {
 
 	for index, element := range response.AccountList {
 		resFinal[index], _ = GetAccount(accessToken, element.Iban)
-		log.Printf("Response 12 %s", resFinal)
+		log.Printf("Response 12 %s", resFinal[index])
 	}
 
 	log.Printf("Response 13 %s", resFinal)
