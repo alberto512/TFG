@@ -282,7 +282,7 @@ func GetAccount(accessToken string, iban string) (string, error) {
 		os.Exit(1)
 	}
 
-	var response []string
+	var response [2]string
 	log.Printf("Response 1 %s", response)
 	response[0] = string(resBody)
 	log.Printf("Response 2 %s", response)
@@ -348,7 +348,7 @@ func GetAccount(accessToken string, iban string) (string, error) {
     }
 	*/
 
-	return strings.Join(response, ","), nil
+	return strings.Join(response[:], ","), nil
 }
 
 func GetAccounts(accessToken string) (string, error) {
