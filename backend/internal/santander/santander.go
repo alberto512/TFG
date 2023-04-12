@@ -1,6 +1,7 @@
 package santander
 
 import (
+	"bytes"
 	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -23,6 +24,8 @@ const endpoint = "https://apis-sandbox.bancosantander.es/canales-digitales/sb/v2
 
 const tokenEndpoint = endpoint + "token";
 const accountsEndpoint = endpoint + "accounts";
+const balancesEndpoint = endpoint + "balances";
+const movementsEndpoint = endpoint + "movements";
 
 type ResponseTokenEndpoint struct {
 	AccessToken		string	`json:"access_token"`
@@ -274,6 +277,73 @@ func GetAccount(accessToken string, iban string) (string, error) {
 	defer res.Body.Close()
 
 	resBody, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		fmt.Printf("client: could not read response body: %s\n", err)
+		os.Exit(1)
+	}
+	fmt.Printf("client: response body: %s\n", resBody)
+
+	// Create the request
+	req, err = http.NewRequest("GET", balancesEndpoint + "/" + iban, nil)
+	if err != nil {
+		log.Printf("Error: Create request")
+        return "", err
+	}
+	
+	// Add all the headers
+	req.Header.Add("Authorization", "Bearer " + accessToken)
+	req.Header.Add("X-IBM-Client-Id", os.Getenv("SANTANDER_ID"))
+	req.Header.Add("accept", "application/json")
+	req.Header.Add("psu_active", "1")
+
+	// Make the request
+	res, err = http.DefaultClient.Do(req)
+	if err != nil {
+		log.Printf("Error: Make request")
+        return "", err
+	}
+	if res.StatusCode != http.StatusOK {
+		log.Printf("Error: Response %d", res.StatusCode)
+        return "", fmt.Errorf("error %d", res.StatusCode)
+	}
+	defer res.Body.Close()
+
+	resBody, err = ioutil.ReadAll(res.Body)
+	if err != nil {
+		fmt.Printf("client: could not read response body: %s\n", err)
+		os.Exit(1)
+	}
+	fmt.Printf("client: response body: %s\n", resBody)
+
+	jsonBody := []byte(`{"movement": "BOTH", "date_to": "2023-04-12", "date_from": "2023-01-15", "amount_to": 100000000, "amount_from": 0, "order": "A"}`)
+ 	bodyReader := bytes.NewReader(jsonBody)
+
+	// Create the request
+	req, err = http.NewRequest("POST", movementsEndpoint + "/" + iban, bodyReader)
+	if err != nil {
+		log.Printf("Error: Create request")
+        return "", err
+	}
+	
+	// Add all the headers
+	req.Header.Add("Authorization", "Bearer " + accessToken)
+	req.Header.Add("X-IBM-Client-Id", os.Getenv("SANTANDER_ID"))
+	req.Header.Add("accept", "application/json")
+	req.Header.Add("psu_active", "1")
+
+	// Make the request
+	res, err = http.DefaultClient.Do(req)
+	if err != nil {
+		log.Printf("Error: Make request")
+        return "", err
+	}
+	if res.StatusCode != http.StatusOK {
+		log.Printf("Error: Response %d", res.StatusCode)
+        return "", fmt.Errorf("error %d", res.StatusCode)
+	}
+	defer res.Body.Close()
+
+	resBody, err = ioutil.ReadAll(res.Body)
 	if err != nil {
 		fmt.Printf("client: could not read response body: %s\n", err)
 		os.Exit(1)
