@@ -1,7 +1,6 @@
 package santander
 
 import (
-	"bytes"
 	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -283,11 +282,20 @@ func GetAccount(accessToken string, iban string) (string, error) {
 	}
 	fmt.Printf("client: response body: %s\n", resBody)
 
-	jsonBody := []byte(`{"movement": "BOTH", "date_to": "2023-04-12", "date_from": "2023-01-15", "amount_to": 100000000, "amount_from": 0, "order": "A"}`)
- 	bodyReader := bytes.NewReader(jsonBody)
+	// Create body
+	body := url.Values{}
+	body.Set("movement", "BOTH")
+	body.Set("date_to", "2023-04-12")
+	body.Set("date_from", "2023-01-15")
+	body.Set("amount_to", "100000000")
+	body.Set("amount_from", "0")
+	body.Set("order", "A")
+
+	// Encode the body
+	encodedBody := body.Encode()
 
 	// Create the request
-	req, err = http.NewRequest("POST", movementsEndpoint + "/" + iban, bodyReader)
+	req, err = http.NewRequest("POST", tokenEndpoint, strings.NewReader(encodedBody))
 	if err != nil {
 		log.Printf("Error: Create request")
         return "", err
