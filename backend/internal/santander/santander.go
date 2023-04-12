@@ -286,6 +286,7 @@ func GetAccount(accessToken string, iban string) (string, error) {
 	response[0] = resBody
 
 	// Create body
+	/*
 	body := []byte(`{
 		"movement": "BOTH",
 		"date_to": "2023-04-12",
@@ -293,7 +294,7 @@ func GetAccount(accessToken string, iban string) (string, error) {
 		"amount_to": 100000000,
 		"amount_from": 0,
 		"order": "A"
-	}`)
+	}`)*/
 
 	payload := strings.NewReader("{\"movement\":\"BOTH\",\"date_to\":\"2023-04-12\",\"date_from\":\"2023-01-15\",\"amount_to\":100000000,\"amount_from\":0,\"order\":\"A\"}")
 
