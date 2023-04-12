@@ -293,6 +293,9 @@ func GetAccount(accessToken string, iban string) (string, error) {
 		"order": "A"
 	}`)
 
+	log.Printf("Body %s", body)
+	log.Printf("Body %s", bytes.NewBuffer(body))
+
 	// Create the request
 	req2, err := http.NewRequest("POST", tokenEndpoint, bytes.NewBuffer(body))
 	if err != nil {
