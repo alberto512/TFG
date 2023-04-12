@@ -26,6 +26,8 @@ const Dashboard = () => {
 
     const accounts = [];
 
+    console.log(responseDecoded);
+
     for (const account in responseDecoded) {
       accounts.push({
         iban: responseDecoded[account][0].account.iban,
@@ -35,8 +37,6 @@ const Dashboard = () => {
         transactions: responseDecoded[account][1].account.transactions,
       });
     }
-
-    console.log(accounts);
 
     setAccounts(accounts);
   };
