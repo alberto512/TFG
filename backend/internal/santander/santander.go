@@ -294,43 +294,43 @@ func GetAccount(accessToken string, iban string) (string, error) {
 	}`)
 
 	// Create the request
-	req, err = http.NewRequest("POST", tokenEndpoint, bytes.NewBuffer(body))
+	req2, err := http.NewRequest("POST", tokenEndpoint, bytes.NewBuffer(body))
 	if err != nil {
 		log.Printf("Error: Create request")
         return "", err
 	}
 	
 	// Add all the headers
-	req.Header.Add("Authorization", "Bearer " + accessToken)
-	req.Header.Add("X-IBM-Client-Id", os.Getenv("SANTANDER_ID"))
-	req.Header.Add("content-type", "application/json")
-	req.Header.Add("accept", "application/json")
-	req.Header.Add("psu_active", "1")
+	req2.Header.Add("Authorization", "Bearer " + accessToken)
+	req2.Header.Add("X-IBM-Client-Id", os.Getenv("SANTANDER_ID"))
+	req2.Header.Add("content-type", "application/json")
+	req2.Header.Add("accept", "application/json")
+	req2.Header.Add("psu_active", "1")
 
 	// Make the request
-	res, err = http.DefaultClient.Do(req)
+	res2, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Printf("Error: Make request")
         return "", err
 	}
-	if res.StatusCode != http.StatusOK {
-		log.Printf("Error: Response %d", res.StatusCode)
-		resBody, err = ioutil.ReadAll(res.Body)
+	if res2.StatusCode != http.StatusOK {
+		log.Printf("Error: Response %d", res2.StatusCode)
+		resBody2, err := ioutil.ReadAll(res2.Body)
 		if err != nil {
 			fmt.Printf("client: could not read response body: %s\n", err)
 			os.Exit(1)
 		}
-		fmt.Printf("client: response body: %s\n", resBody)
-        return "", fmt.Errorf("error %d", res.StatusCode)
+		fmt.Printf("client: response body: %s\n", resBody2)
+        return "", fmt.Errorf("error %d", res2.StatusCode)
 	}
-	defer res.Body.Close()
+	defer res2.Body.Close()
 
-	resBody, err = ioutil.ReadAll(res.Body)
+	resBody2, err := ioutil.ReadAll(res2.Body)
 	if err != nil {
 		fmt.Printf("client: could not read response body: %s\n", err)
 		os.Exit(1)
 	}
-	fmt.Printf("client: response body: %s\n", resBody)
+	fmt.Printf("client: response body: %s\n", resBody2)
 
 	// Decode the response
 	/*
