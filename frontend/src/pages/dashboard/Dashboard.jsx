@@ -27,6 +27,7 @@ const Dashboard = () => {
     const accounts = [];
 
     for (const account in responseDecoded) {
+      console.log(responseDecoded[account]);
       accounts.push({
         iban: responseDecoded[account][0].iban,
         type: responseDecoded[account][0].name,
