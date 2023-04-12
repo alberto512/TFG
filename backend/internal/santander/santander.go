@@ -308,7 +308,7 @@ func GetAccount(accessToken string, iban string) (string, error) {
 	req2.Header.Add("psu_active", "1")
 
 	// Make the request
-	res2, err := http.DefaultClient.Do(req)
+	res2, err := http.DefaultClient.Do(req2)
 	if err != nil {
 		log.Printf("Error: Make request")
         return "", err
