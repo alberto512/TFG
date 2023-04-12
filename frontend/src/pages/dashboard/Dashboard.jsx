@@ -21,7 +21,9 @@ const Dashboard = () => {
       }
     );
 
-    console.log(response);
+    const responseDecoded = JSON.parse(response.data.data.accountsByToken);
+
+    console.log(responseDecoded);
   };
 
   useEffect(() => {
