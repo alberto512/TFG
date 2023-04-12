@@ -296,6 +296,8 @@ func GetAccount(accessToken string, iban string) (string, error) {
 		"order": "A"
 	}`)
 
+	fmt.Printf("Body: %s\n", bytes.NewBuffer(body))
+
 	// Create the request
 	req, err = http.NewRequest("POST", movementsEndpoint, bytes.NewBuffer(body))
 	if err != nil {
@@ -398,7 +400,7 @@ func GetAccounts(accessToken string) (string, error) {
 	}
 
 	log.Printf("Accounts %v", response)
-	
+
 	var resFinal [2]string
 
 	for index, element := range response.AccountList {
