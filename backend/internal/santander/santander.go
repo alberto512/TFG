@@ -24,7 +24,6 @@ const endpoint = "https://apis-sandbox.bancosantander.es/canales-digitales/sb/v2
 
 const tokenEndpoint = endpoint + "token";
 const accountsEndpoint = endpoint + "accounts";
-const balancesEndpoint = endpoint + "balances";
 const movementsEndpoint = endpoint + "movements";
 
 type ResponseTokenEndpoint struct {
@@ -293,48 +292,44 @@ func GetAccount(accessToken string, iban string) (string, error) {
 		"order": "A"
 	}`)
 
-	log.Printf("Body %s", body)
-	log.Printf("Body %s", bytes.NewBuffer(body))
-
 	// Create the request
-	req2, err := http.NewRequest("POST", tokenEndpoint, bytes.NewBuffer(body))
+	req, err = http.NewRequest("POST", movementsEndpoint, bytes.NewBuffer(body))
 	if err != nil {
 		log.Printf("Error: Create request")
         return "", err
 	}
 	
 	// Add all the headers
-	req2.Header.Add("Authorization", "Bearer " + accessToken)
-	log.Printf("X-IBM-Client-Id %s", os.Getenv("SANTANDER_ID"))
-	req2.Header.Add("X-IBM-Client-Id", os.Getenv("SANTANDER_ID"))
-	req2.Header.Add("content-type", "application/json")
-	req2.Header.Add("accept", "application/json")
-	req2.Header.Add("psu_active", "1")
+	req.Header.Add("Authorization", "Bearer " + accessToken)
+	req.Header.Add("X-IBM-Client-Id", os.Getenv("SANTANDER_ID"))
+	req.Header.Add("content-type", "application/json")
+	req.Header.Add("accept", "application/json")
+	req.Header.Add("psu_active", "1")
 
 	// Make the request
-	res2, err := http.DefaultClient.Do(req2)
+	res, err = http.DefaultClient.Do(req)
 	if err != nil {
 		log.Printf("Error: Make request")
         return "", err
 	}
-	if res2.StatusCode != http.StatusOK {
-		log.Printf("Error: Response %d", res2.StatusCode)
-		resBody2, err := ioutil.ReadAll(res2.Body)
+	if res.StatusCode != http.StatusOK {
+		log.Printf("Error: Response %d", res.StatusCode)
+		resBody, err = ioutil.ReadAll(res.Body)
 		if err != nil {
 			fmt.Printf("client: could not read response body: %s\n", err)
 			os.Exit(1)
 		}
-		fmt.Printf("client: response body: %s\n", resBody2)
-        return "", fmt.Errorf("error %d", res2.StatusCode)
+		fmt.Printf("client: response body: %s\n", resBody)
+        return "", fmt.Errorf("error %d", res.StatusCode)
 	}
-	defer res2.Body.Close()
+	defer res.Body.Close()
 
-	resBody2, err := ioutil.ReadAll(res2.Body)
+	resBody, err = ioutil.ReadAll(res.Body)
 	if err != nil {
 		fmt.Printf("client: could not read response body: %s\n", err)
 		os.Exit(1)
 	}
-	fmt.Printf("client: response body: %s\n", resBody2)
+	fmt.Printf("client: response body: %s\n", resBody)
 
 	// Decode the response
 	/*
