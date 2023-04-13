@@ -21,9 +21,6 @@ const SantanderLogin = () => {
       accounts: [],
       balances: [],
       transactions: [],
-      cards_accounts: [],
-      cards_balances: [],
-      cards_transactions: [],
     },
     recurringIndicator: true,
   };
