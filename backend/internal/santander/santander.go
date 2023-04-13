@@ -384,14 +384,20 @@ func GetAccounts(accessToken string) (string, error) {
         return "", err
 	}
 
-	var resFinal [2]string
+	resFinal := make([]string, 0)
 
-	for index, element := range response.AccountList {
+	for _, element := range response.AccountList {
 		arrayString, _ := GetAccount(accessToken, element.Iban)
-		resFinal[index] = "[" + arrayString + "]"
+		resFinal = append(resFinal, "[" + arrayString + "]")
 	}
 
-	responseFinal := "[" + strings.Join(resFinal[:], ",") + "]"
+	responseFinal := ""
+
+	if len(resFinal) == 1 {
+		responseFinal = "[" + strings.Join(resFinal[:], "") + "]"
+	} else {
+		responseFinal = "[" + strings.Join(resFinal[:], ",") + "]"
+	}
 
 	return responseFinal, nil
 }
