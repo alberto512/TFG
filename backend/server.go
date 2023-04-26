@@ -40,7 +40,7 @@ func main() {
 	router := chi.NewRouter()
 
 	router.Use(cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000", "https://tfg-frontend-production.up.railway.app"},
+		AllowedOrigins:   []string{"http://localhost:3000", "https://tfg-frontend.up.railway.app"},
 		AllowedHeaders:   []string{"Authorization", "Content-Type", "Withcredentials"},
 	}).Handler)
 
