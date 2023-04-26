@@ -67,7 +67,7 @@ const Accounts = () => {
     const response = await axios.post(
       backendUrl,
       {
-        query: `query { refreshBankData }`,
+        query: `mutation { refreshBankData }`,
       },
       {
         headers: {
