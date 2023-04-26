@@ -24,22 +24,8 @@ function App() {
         <Route path='/' element={<Home />} />
         <Route path='login' element={<Login />} />
         <Route path='register' element={<Register />} />
-        <Route
-          path='registerBank'
-          element={
-            <ProtectedRoute>
-              <RegisterBank />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path='santanderLogin'
-          element={
-            <ProtectedRoute>
-              <SantanderLogin />
-            </ProtectedRoute>
-          }
-        />
+        <Route path='registerBank' element={<RegisterBank />} />
+        <Route path='santanderLogin' element={<SantanderLogin />} />
         <Route
           path='accounts'
           element={
