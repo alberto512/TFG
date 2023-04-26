@@ -91,6 +91,8 @@ const AuthProvider = ({ children }) => {
         false
       );
 
+      console.log('registerBank');
+
       navigate('/registerBank');
     } catch (error) {
       console.log(error);
