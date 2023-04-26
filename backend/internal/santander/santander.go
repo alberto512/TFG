@@ -338,6 +338,8 @@ func RefreshData(userId string) (error) {
         return err
 	}
 
+	fmt.Println(accessToken, userId)
+
 	// Create the request
 	req, err := http.NewRequest("GET", accountsEndpoint, nil)
 	if err != nil {
