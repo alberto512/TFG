@@ -35,7 +35,7 @@ const Accounts = () => {
       }
     );
 
-    const responseDecoded = JSON.parse(response.data.data.accountsByToken);
+    const responseDecoded = JSON.parse(response.data.accounts);
 
     const accounts = [];
 
