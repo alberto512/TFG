@@ -8,28 +8,34 @@ import (
 	"strconv"
 )
 
-type NewOperation struct {
-	Description string  `json:"description"`
-	Date        int     `json:"date"`
-	Amount      float64 `json:"amount"`
-	Category    string  `json:"category"`
+type Account struct {
+	ID           string         `json:"id"`
+	Iban         string         `json:"iban"`
+	Name         string         `json:"name"`
+	Currency     string         `json:"currency"`
+	Amount       float64        `json:"amount"`
+	Bank         string         `json:"Bank"`
+	User         *User          `json:"user"`
+	Transactions []*Transaction `json:"transactions"`
 }
 
-type Operation struct {
-	ID          string  `json:"id"`
-	Description string  `json:"description"`
-	Date        int     `json:"date"`
-	Amount      float64 `json:"amount"`
-	Category    string  `json:"category"`
-	UserID      string  `json:"userId"`
-}
-
-type UpdateOperation struct {
+type Transaction struct {
 	ID          string   `json:"id"`
-	Description *string  `json:"description"`
-	Date        *int     `json:"date"`
-	Amount      *float64 `json:"amount"`
-	Category    *string  `json:"category"`
+	Description string   `json:"description"`
+	Date        int      `json:"date"`
+	Amount      float64  `json:"amount"`
+	Category    string   `json:"category"`
+	User        *User    `json:"user"`
+	Account     *Account `json:"account"`
+}
+
+type User struct {
+	ID           string         `json:"id"`
+	Username     string         `json:"username"`
+	Password     string         `json:"password"`
+	Role         Role           `json:"role"`
+	Accounts     []*Account     `json:"accounts"`
+	Transactions []*Transaction `json:"transactions"`
 }
 
 type Role string

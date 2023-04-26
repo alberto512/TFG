@@ -13,10 +13,10 @@ import (
 )
 
 type User struct {
-    ID       string `bson:"_id,omitempty"`
-    Username string `bson:"username,omitempty"`
-    Password string `bson:"password,omitempty"`
-    Role 	 model.Role `bson:"role,omitempty"`
+    ID       string `bson:"_id"`
+    Username string `bson:"username"`
+    Password string `bson:"password"`
+    Role 	 model.Role `bson:"role"`
 }
 
 func (user *User) Authenticate() (bool, error) {

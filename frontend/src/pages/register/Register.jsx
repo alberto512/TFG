@@ -3,40 +3,40 @@ import { useAuth } from 'components/authProvider/AuthProvider';
 import './Register.css';
 
 const Register = () => {
-  const { token, onRegister } = useAuth();
+  const { onRegister } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('ADMIN');
 
   const registerHandler = () => {
-    onRegister(username, password, role);
+    onRegister(username, password, 'USER');
   };
 
   return (
-    <>
-      <h1>Register</h1>
-      {!token && (
-        <>
+    <div className='wrapper'>
+      <div className='form-container'>
+        <div className='form-wrapper'>
+          <span className='form-label'>Username</span>
           <input
+            className='input-label'
             type='text'
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
+        </div>
+        <div className='form-wrapper'>
+          <span className='form-label'>Password</span>
           <input
+            className='input-label'
             type='password'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <select value={role} onChange={(e) => setRole(e.target.value)}>
-            <option value='ADMIN'>Admin</option>
-            <option value='USER'>User</option>
-          </select>
-          <button type='button' onClick={registerHandler}>
-            Register
-          </button>
-        </>
-      )}
-    </>
+        </div>
+      </div>
+      <div className='btn-submit' onClick={registerHandler}>
+        <span>Register</span>
+      </div>
+    </div>
   );
 };
 

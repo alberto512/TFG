@@ -149,7 +149,7 @@ func getTokenWithRefresh(userId string, refresh string) (string, error) {
 	return response.AccessToken, nil
 }
 
-func GetToken(userId string) (string, error) {
+func getToken(userId string) (string, error) {
 	var userToken *UserToken
 
 	log.Printf("Get token by userId")
@@ -189,6 +189,88 @@ func GetToken(userId string) (string, error) {
 	}
 
 	return userToken.AccessToken, nil
+}
+
+func refreshAccount(accessToken string, iban string) (error) {
+	log.Printf("Refresh account")
+	
+	// Create the request
+	req, err := http.NewRequest("GET", accountsEndpoint + "/" + iban + "?withBalance=true", nil)
+	if err != nil {
+		log.Printf("Error: Create request")
+        return err
+	}
+	
+	// Add all the headers
+	req.Header.Add("Authorization", "Bearer " + accessToken)
+	req.Header.Add("X-IBM-Client-Id", os.Getenv("SANTANDER_ID"))
+	req.Header.Add("accept", "application/json")
+	req.Header.Add("psu_active", "1")
+
+	// Make the request
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Printf("Error: Make request")
+        return err
+	}
+	if res.StatusCode != http.StatusOK {
+		log.Printf("Error: Response %d", res.StatusCode)
+        return fmt.Errorf("error %d", res.StatusCode)
+	}
+	defer res.Body.Close()
+
+	resBody, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		fmt.Printf("client: could not read response body: %s\n", err)
+		os.Exit(1)
+	}
+
+	log.Printf("Info: Response %s", resBody)
+
+	// Create body
+	body := []byte(`{
+		"movement": "BOTH",
+		"date_to": "2023-04-12",
+		"date_from": "2023-02-15",
+		"amount_to": 100000000,
+		"amount_from": 0,
+		"order": "A"
+	}`)
+
+	// Create the request
+	req, err = http.NewRequest("POST", movementsEndpoint + "/" + iban, bytes.NewBuffer(body))
+	if err != nil {
+		log.Printf("Error: Create request")
+        return err
+	}
+	
+	// Add all the headers
+	req.Header.Add("Authorization", "Bearer " + accessToken)
+	req.Header.Add("X-IBM-Client-Id", os.Getenv("SANTANDER_ID"))
+	req.Header.Add("content-type", "application/json")
+	req.Header.Add("accept", "application/json")
+	req.Header.Add("psu_active", "1")
+
+	// Make the request
+	res, err = http.DefaultClient.Do(req)
+	if err != nil {
+		log.Printf("Error: Make request")
+        return err
+	}
+	if res.StatusCode != http.StatusOK {
+		log.Printf("Error: Response %d", res.StatusCode)
+        return fmt.Errorf("error %d", res.StatusCode)
+	}
+	defer res.Body.Close()
+
+	resBody, err = ioutil.ReadAll(res.Body)
+	if err != nil {
+		fmt.Printf("client: could not read response body: %s\n", err)
+		os.Exit(1)
+	}
+	log.Printf("Info: Response %s", resBody)
+
+	return nil
 }
 
 func GetTokenWithCode(userId string, code string) (string, error) {
@@ -247,115 +329,20 @@ func GetTokenWithCode(userId string, code string) (string, error) {
 	return response.AccessToken, nil
 }
 
-func GetAccount(accessToken string, iban string) (string, error) {
-	log.Printf("Get account of user")
-	
+func RefreshData(userId string) (error) {
+	log.Printf("Refresh data of user")
 
-	// Create the request
-	req, err := http.NewRequest("GET", accountsEndpoint + "/" + iban + "?withBalance=true", nil)
+	accessToken, err := getToken(userId)
 	if err != nil {
-		log.Printf("Error: Create request")
-        return "", err
+		log.Printf("Error: Get user token")
+        return err
 	}
-	
-	// Add all the headers
-	req.Header.Add("Authorization", "Bearer " + accessToken)
-	req.Header.Add("X-IBM-Client-Id", os.Getenv("SANTANDER_ID"))
-	req.Header.Add("accept", "application/json")
-	req.Header.Add("psu_active", "1")
-
-	// Make the request
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		log.Printf("Error: Make request")
-        return "", err
-	}
-	if res.StatusCode != http.StatusOK {
-		log.Printf("Error: Response %d", res.StatusCode)
-        return "", fmt.Errorf("error %d", res.StatusCode)
-	}
-	defer res.Body.Close()
-
-	resBody, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		fmt.Printf("client: could not read response body: %s\n", err)
-		os.Exit(1)
-	}
-
-	var response [2]string
-	response[0] = string(resBody)
-
-	// Create body
-	body := []byte(`{
-		"movement": "BOTH",
-		"date_to": "2023-04-12",
-		"date_from": "2023-01-15",
-		"amount_to": 100000000,
-		"amount_from": 0,
-		"order": "A"
-	}`)
-
-	// Create the request
-	req, err = http.NewRequest("POST", movementsEndpoint + "/" + iban, bytes.NewBuffer(body))
-	if err != nil {
-		log.Printf("Error: Create request")
-        return "", err
-	}
-	
-	// Add all the headers
-	req.Header.Add("Authorization", "Bearer " + accessToken)
-	req.Header.Add("X-IBM-Client-Id", os.Getenv("SANTANDER_ID"))
-	req.Header.Add("content-type", "application/json")
-	req.Header.Add("accept", "application/json")
-	req.Header.Add("psu_active", "1")
-
-	// Make the request
-	res, err = http.DefaultClient.Do(req)
-	if err != nil {
-		log.Printf("Error: Make request")
-        return "", err
-	}
-	if res.StatusCode != http.StatusOK {
-		log.Printf("Error: Response %d", res.StatusCode)
-        return "", fmt.Errorf("error %d", res.StatusCode)
-	}
-	defer res.Body.Close()
-
-	resBody, err = ioutil.ReadAll(res.Body)
-	if err != nil {
-		fmt.Printf("client: could not read response body: %s\n", err)
-		os.Exit(1)
-	}
-
-	response[1] = string(resBody)
-
-	// Decode the response
-	/*
-	response := &ResponseAccountsEndpoint{}
-	derr := json.NewDecoder(res.Body).Decode(response)
-	if derr != nil {
-		log.Printf("Error: Decoding response")
-        return "", err
-	}
-
-	log.Printf("Accounts %v", response)
-	out, err := json.Marshal(response)
-    if err != nil {
-        panic(err)
-    }
-	*/
-
-	return strings.Join(response[:], ","), nil
-}
-
-func GetAccounts(accessToken string) (string, error) {
-	log.Printf("Get accounts of user")
 
 	// Create the request
 	req, err := http.NewRequest("GET", accountsEndpoint, nil)
 	if err != nil {
 		log.Printf("Error: Create request")
-        return "", err
+        return err
 	}
 	
 	// Add all the headers
@@ -368,36 +355,30 @@ func GetAccounts(accessToken string) (string, error) {
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Printf("Error: Make request")
-        return "", err
+        return err
 	}
 	if res.StatusCode != http.StatusOK {
 		log.Printf("Error: Response %d", res.StatusCode)
-        return "", fmt.Errorf("error %d", res.StatusCode)
+        return fmt.Errorf("error %d", res.StatusCode)
 	}
 	defer res.Body.Close()
 
 	// Decode the response
 	response := &ResponseAccountsEndpoint{}
-	derr := json.NewDecoder(res.Body).Decode(response)
-	if derr != nil {
+	err = json.NewDecoder(res.Body).Decode(response)
+	if err != nil {
 		log.Printf("Error: Decoding response")
-        return "", err
+        return err
 	}
 
-	resFinal := make([]string, 0)
-
+	// Refresh each account from the response
 	for _, element := range response.AccountList {
-		arrayString, _ := GetAccount(accessToken, element.Iban)
-		resFinal = append(resFinal, "[" + arrayString + "]")
+		err := refreshAccount(accessToken, element.Iban)
+		if err != nil {
+			log.Printf("Error: Refreshing account")
+        	return err
+		}
 	}
 
-	responseFinal := ""
-
-	if len(resFinal) == 1 {
-		responseFinal = "[" + strings.Join(resFinal[:], "") + "]"
-	} else {
-		responseFinal = "[" + strings.Join(resFinal[:], ",") + "]"
-	}
-
-	return responseFinal, nil
+	return nil
 }

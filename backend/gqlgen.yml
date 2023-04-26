@@ -41,8 +41,8 @@ resolver:
 
 # gqlgen will search for any type names in the schema in these go packages
 # if they match it will use them, otherwise it will generate them.
-autobind:
-  - 'tfg/graph/model'
+# autobind:
+#   - 'tfg/graph/model'
 
 # This section declares type mapping between the GraphQL and go type systems
 #
@@ -63,5 +63,19 @@ models:
       - github.com/99designs/gqlgen/graphql.Int32
   User:
     fields:
-      operations:
+      accounts:
+        resolver: true
+      transactions:
+        resolver: true
+  Account:
+    fields:
+      user:
+        resolver: true
+      transactions:
+        resolver: true
+  Transaction:
+    fields:
+      user:
+        resolver: true
+      account:
         resolver: true

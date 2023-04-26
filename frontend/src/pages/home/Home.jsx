@@ -3,9 +3,11 @@ import './Home.css';
 
 const Home = () => {
   return (
-    <>
-      <h1>Home</h1>
-    </>
+    <div className='title-wrapper'>
+      <h1 className='title'>
+        Aplicación web para la gestión de gastos familiares
+      </h1>
+    </div>
   );
 };
 

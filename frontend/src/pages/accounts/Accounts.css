@@ -1,0 +1,86 @@
+.wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow-y: overlay;
+}
+
+.title-accounts-wrapper {
+  height: 20%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title-accounts {
+  font-size: 75px;
+  color: #9b603f;
+}
+
+.btn-refresh {
+  margin-top: 20px;
+  width: 150px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 15px;
+  background-color: #00ddb2;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.spinner-accounts {
+  margin-top: 20px;
+  width: 50px;
+  height: 50px;
+  color: #00ddb2;
+}
+
+.scroller {
+  height: 90%;
+}
+
+.account-wrapper {
+  margin-top: 25px;
+  margin-bottom: 25px;
+  width: 500px;
+  border: 5px solid #00ddb2;
+  border-radius: 15px;
+  background-color: #091f22;
+  color: #00ddb2;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+.account-wrapper-negative {
+  border: 5px solid #dd002b;
+  color: #dd002b;
+}
+
+.iban {
+  font-size: 30px;
+}
+
+.account-info {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+}
+
+.account-balance {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 25px;
+}

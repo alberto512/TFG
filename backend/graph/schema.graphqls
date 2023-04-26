@@ -2,23 +2,22 @@ type Mutation {
   login(username: String!, password: String!): String!
   refreshToken(token: String!): String!
   createUser(username: String!, password: String!, role: Role!): User!
-  updateUser(id: ID!, password: String!): User!
+  updatePassword(id: ID!, password: String!): User!
   deleteUser(id: ID!): String!
-  createOperation(input: NewOperation!): Operation!
-  updateOperation(input: UpdateOperation): Operation!
-  deleteOperation(id: ID!): String!
+  refreshBankData: String!
 }
 
 type Query {
-  tokenWithCode(code: String!): String!
-  accountsByToken: String!
   users: [User!]!
   userById(id: ID!): User!
   userByToken: User!
-  operations: [Operation!]!
-  operationById(id: ID!): Operation!
-  operationsByDate(initDate: Int!, endDate: Int!): [Operation!]!
-  operationsByCategory(category: String!): [Operation!]!
+  accounts: [Account!]!
+  accountById(id: ID!): Account!
+  transactions: [Transaction!]!
+  transactionById(id: ID!): Transaction!
+  transactionsByDate(initDate: Int!, endDate: Int!): [Transaction!]!
+  transactionsByCategory(category: String!): [Transaction!]!
+  tokenWithCode(code: String!): String!
 }
 
 enum Role {
@@ -31,29 +30,27 @@ type User {
   username: String!
   password: String!
   role: Role!
-  operations: [Operation!]!
+  accounts: [Account!]!
+  transactions: [Transaction!]!
 }
 
-type Operation {
+type Account {
+  id: ID!
+  iban: String!
+  name: String!
+  currency: String!
+  amount: Float!
+  bank: String!
+  user: User!
+  transactions: [Transaction!]!
+}
+
+type Transaction {
   id: ID!
   description: String!
   date: Int!
   amount: Float!
   category: String!
-  userId: ID!
-}
-
-input NewOperation {
-  description: String!
-  date: Int!
-  amount: Float!
-  category: String!
-}
-
-input UpdateOperation {
-  id: ID!
-  description: String
-  date: Int
-  amount: Float
-  category: String
+  user: User!
+  account: Account!
 }

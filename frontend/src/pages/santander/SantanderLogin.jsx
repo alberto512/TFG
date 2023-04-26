@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from 'components/authProvider/AuthProvider';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import './SantanderLogin.css';
 
@@ -47,7 +48,7 @@ const SantanderLogin = () => {
 
       if (JSON.parse(localStorage.getItem('Authorize'))) {
         localStorage.setItem('Authorize', false);
-        navigate('/dashboard');
+        navigate('/accounts');
       } else {
         localStorage.setItem('Authorize', true);
         await axios
@@ -98,7 +99,11 @@ const SantanderLogin = () => {
     santanderUrlAuthorize,
   ]);
 
-  return <></>;
+  return (
+    <div className='wrapper'>
+      <FontAwesomeIcon className='spinner' icon='fa-solid fa-spinner' spin />
+    </div>
+  );
 };
 
 export default SantanderLogin;

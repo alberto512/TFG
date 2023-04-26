@@ -6,17 +6,15 @@ const RegisterBank = () => {
   const navigate = useNavigate();
 
   const santanderBank = () => {
-    // If tokens are correct redirect to /dashboard
-    // In /dashboard you should see a boton of update and the information of the accounts
-    // Order files and folders
-    // Review imports
     navigate('/santanderLogin');
   };
 
   return (
-    <>
-      <button onClick={santanderBank}>Register Santander user</button>
-    </>
+    <div className='wrapper'>
+      <div className='item' onClick={santanderBank}>
+        Register Santander user
+      </div>
+    </div>
   );
 };
 
