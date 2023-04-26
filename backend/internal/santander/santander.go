@@ -57,7 +57,7 @@ type ResponseAccountExpanded struct {
 	Iban		string				`json:"iban"`
 	Name  		string				`json:"name"`
 	Currency	string				`json:"currency"`
-	Balance		ResponseBalance 	`json:"valance"`
+	Balance		ResponseBalance 	`json:"balance"`
 }
 
 type ResponseAccountEndpoint struct {
