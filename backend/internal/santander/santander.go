@@ -361,6 +361,7 @@ func RefreshData(userId string) (error) {
 	}
 	if res.StatusCode != http.StatusOK {
 		log.Printf("Error: Response %d", res.StatusCode)
+		log.Printf("Error: Response %d", res.Body)
         return fmt.Errorf("error %d", res.StatusCode)
 	}
 	defer res.Body.Close()
