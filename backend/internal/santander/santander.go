@@ -5,7 +5,6 @@ import (
 	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -41,10 +40,26 @@ type UserToken struct {
 	RefreshToken	string 		`bson:"refreshToken,omitempty"`
 }
 
-type ResponseMovementsEndpoint struct {
-	Iban		string	`json:"iban"`
-	Name  		string 	`json:"name"`
-	Currency	string 	`json:"currency"`
+type ResponseAmountBalance struct {
+	Currency	string	`json:"currency"`
+	Content		string	`json:"content"`
+}
+
+type ResponseTransactions struct {
+	BookingDate string					`json:"bookingDate"`
+	ValueDate   string					`json:"valueDate"`
+	Description	string					`json:"description"`
+	Amount      ResponseAmountBalance	`json:"amount"`
+	Balance     ResponseAmountBalance 	`json:"balance"`
+}
+
+type ResponseAccountWithTransactions struct {
+	Iban			string					`json:"iban"`
+	Transactions	[]ResponseTransactions	`json:"transactions"`
+}
+
+type ResponseTransactionsEndpoint struct {
+	Account	ResponseAccountExpanded	`json:"account"`
 }
 
 type ResponseBalance struct {
@@ -295,12 +310,23 @@ func refreshAccount(accessToken string, iban string) (error) {
 	}
 	defer res.Body.Close()
 
-	resBody, err := ioutil.ReadAll(res.Body)
+	// Decode the response
+	response2 := &ResponseTransactionsEndpoint{}
+	err = json.NewDecoder(res.Body).Decode(response2)
+	if err != nil {
+		log.Printf("Error: Decoding response")
+        return err
+	}
+
+	log.Printf("Info: Response 2 decoded %s", response2)
+
+	/*resBody, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		fmt.Printf("client: could not read response body: %s\n", err)
 		os.Exit(1)
 	}
 	log.Printf("Info: Response %s", resBody)
+	*/
 
 	return nil
 }
