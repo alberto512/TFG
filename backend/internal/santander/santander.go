@@ -41,6 +41,30 @@ type UserToken struct {
 	RefreshToken	string 		`bson:"refreshToken,omitempty"`
 }
 
+type ResponseMovementsEndpoint struct {
+	Iban		string	`json:"iban"`
+	Name  		string 	`json:"name"`
+	Currency	string 	`json:"currency"`
+}
+
+type ResponseBalance struct {
+	Amount					string	`json:"amount"`
+	Currency				string 	`json:"currency"`
+	CreditDebitIndicator	string	`json:"creditDebitIndicator"`
+}
+
+type ResponseAccountExpanded struct {
+	Iban		string				`json:"iban"`
+	Name  		string				`json:"name"`
+	Currency	string				`json:"currency"`
+	Balance		ResponseBalance 	`json:"valance"`
+}
+
+type ResponseAccountEndpoint struct {
+	Account		ResponseAccountExpanded	`json:"account"`
+	RequestId	string					`json:"requestId"`
+}
+
 type ResponseAccount struct {
 	Iban		string	`json:"iban"`
 	Name  		string 	`json:"name"`
@@ -219,13 +243,21 @@ func refreshAccount(accessToken string, iban string) (error) {
 	}
 	defer res.Body.Close()
 
-	resBody, err := ioutil.ReadAll(res.Body)
+	/*resBody, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		fmt.Printf("client: could not read response body: %s\n", err)
 		os.Exit(1)
+	}*/
+
+	// Decode the response
+	response := &ResponseAccountEndpoint{}
+	err = json.NewDecoder(res.Body).Decode(response)
+	if err != nil {
+		log.Printf("Error: Decoding response")
+        return err
 	}
 
-	log.Printf("Info: Response %s", resBody)
+	log.Printf("Info: Response 1 decoded %s", response)
 
 	// Create body
 	body := []byte(`{
@@ -263,7 +295,7 @@ func refreshAccount(accessToken string, iban string) (error) {
 	}
 	defer res.Body.Close()
 
-	resBody, err = ioutil.ReadAll(res.Body)
+	resBody, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		fmt.Printf("client: could not read response body: %s\n", err)
 		os.Exit(1)
@@ -338,8 +370,6 @@ func RefreshData(userId string) (error) {
         return err
 	}
 
-	fmt.Println(accessToken, userId)
-
 	// Create the request
 	req, err := http.NewRequest("GET", accountsEndpoint, nil)
 	if err != nil {
@@ -361,7 +391,6 @@ func RefreshData(userId string) (error) {
 	}
 	if res.StatusCode != http.StatusOK {
 		log.Printf("Error: Response %d", res.StatusCode)
-		log.Printf("Error: Response %d", res.Body)
         return fmt.Errorf("error %d", res.StatusCode)
 	}
 	defer res.Body.Close()
