@@ -59,7 +59,7 @@ type ResponseAccountWithTransactions struct {
 }
 
 type ResponseTransactionsEndpoint struct {
-	Account	ResponseAccountExpanded	`json:"account"`
+	Account	ResponseAccountWithTransactions	`json:"account"`
 }
 
 type ResponseBalance struct {
