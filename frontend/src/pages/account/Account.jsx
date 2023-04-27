@@ -57,6 +57,8 @@ const Account = () => {
     getAccount();
   }, []);
 
+  console.log(account);
+
   if (!account) {
     return (
       <FontAwesomeIcon className='spinner' icon='fa-solid fa-spinner' spin />
