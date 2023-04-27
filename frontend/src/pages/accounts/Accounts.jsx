@@ -103,7 +103,7 @@ const Accounts = () => {
                 <span className='iban'>{account.iban}</span>
                 <div className='account-info'>
                   <span>{account.bank}</span>
-                  <span>{account.type}</span>
+                  <span>{account.name}</span>
                 </div>
                 <div className='account-balance'>
                   <span>
