@@ -156,7 +156,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Account.Amount(childComplexity), true
 
-	case "Account.Bank":
+	case "Account.bank":
 		if e.complexity.Account.Bank == nil {
 			break
 		}
@@ -1032,8 +1032,8 @@ func (ec *executionContext) fieldContext_Account_amount(ctx context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _Account_Bank(ctx context.Context, field graphql.CollectedField, obj *model.Account) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Account_Bank(ctx, field)
+func (ec *executionContext) _Account_bank(ctx context.Context, field graphql.CollectedField, obj *model.Account) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Account_bank(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1063,7 +1063,7 @@ func (ec *executionContext) _Account_Bank(ctx context.Context, field graphql.Col
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Account_Bank(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Account_bank(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Account",
 		Field:      field,
@@ -1765,8 +1765,8 @@ func (ec *executionContext) fieldContext_Query_accounts(ctx context.Context, fie
 				return ec.fieldContext_Account_currency(ctx, field)
 			case "amount":
 				return ec.fieldContext_Account_amount(ctx, field)
-			case "Bank":
-				return ec.fieldContext_Account_Bank(ctx, field)
+			case "bank":
+				return ec.fieldContext_Account_bank(ctx, field)
 			case "user":
 				return ec.fieldContext_Account_user(ctx, field)
 			case "transactions":
@@ -1826,8 +1826,8 @@ func (ec *executionContext) fieldContext_Query_accountById(ctx context.Context, 
 				return ec.fieldContext_Account_currency(ctx, field)
 			case "amount":
 				return ec.fieldContext_Account_amount(ctx, field)
-			case "Bank":
-				return ec.fieldContext_Account_Bank(ctx, field)
+			case "bank":
+				return ec.fieldContext_Account_bank(ctx, field)
 			case "user":
 				return ec.fieldContext_Account_user(ctx, field)
 			case "transactions":
@@ -2627,8 +2627,8 @@ func (ec *executionContext) fieldContext_Transaction_account(ctx context.Context
 				return ec.fieldContext_Account_currency(ctx, field)
 			case "amount":
 				return ec.fieldContext_Account_amount(ctx, field)
-			case "Bank":
-				return ec.fieldContext_Account_Bank(ctx, field)
+			case "bank":
+				return ec.fieldContext_Account_bank(ctx, field)
 			case "user":
 				return ec.fieldContext_Account_user(ctx, field)
 			case "transactions":
@@ -2865,8 +2865,8 @@ func (ec *executionContext) fieldContext_User_accounts(ctx context.Context, fiel
 				return ec.fieldContext_Account_currency(ctx, field)
 			case "amount":
 				return ec.fieldContext_Account_amount(ctx, field)
-			case "Bank":
-				return ec.fieldContext_Account_Bank(ctx, field)
+			case "bank":
+				return ec.fieldContext_Account_bank(ctx, field)
 			case "user":
 				return ec.fieldContext_Account_user(ctx, field)
 			case "transactions":
@@ -4764,9 +4764,9 @@ func (ec *executionContext) _Account(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
-		case "Bank":
+		case "bank":
 
-			out.Values[i] = ec._Account_Bank(ctx, field, obj)
+			out.Values[i] = ec._Account_bank(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)

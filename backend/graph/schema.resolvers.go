@@ -18,6 +18,86 @@ import (
 	"time"
 )
 
+// User is the resolver for the user field.
+func (r *accountResolver) User(ctx context.Context, obj *model.Account) (*model.User, error) {
+	// Set variables
+	var userAuth *users.User
+	var account *accounts.Account
+	var user *users.User
+
+	log.Printf("Resolver: User-Account")
+
+	// Get user from context
+	if userAuth = middleware.ForContext(ctx); userAuth == nil {
+		log.Printf("Error: Access denied")
+		return &model.User{}, fmt.Errorf("access denied")
+	}
+
+	account.ID = obj.ID
+
+	// Get account in db
+	err := account.GetAccountById("")
+	if err != nil {
+		log.Printf("Error: Get account")
+		return &model.User{}, err
+	}
+
+	user.ID = account.UserID
+
+	// Get user
+	err = user.GetUserById()
+	if err != nil {
+		log.Printf("Error: Get user")
+		return &model.User{}, err
+	}
+
+	// Parse to model.User
+	graphqlUser := &model.User{
+		ID:       user.ID,
+		Username: user.Username,
+		Password: user.Password,
+		Role:     user.Role,
+	}
+
+	return graphqlUser, nil
+}
+
+// Transactions is the resolver for the transactions field.
+func (r *accountResolver) Transactions(ctx context.Context, obj *model.Account) ([]*model.Transaction, error) {
+	// Set variables
+	var userAuth *users.User
+	var graphqlTransactions []*model.Transaction
+
+	log.Printf("Resolver: Transactions-Account")
+
+	// Get user from context
+	if userAuth = middleware.ForContext(ctx); userAuth == nil {
+		log.Printf("Error: Access denied")
+		return graphqlTransactions, fmt.Errorf("access denied")
+	}
+
+	// Get all transactions of account
+	transactions, err := transactions.GetAllTransactions(obj.ID)
+	if err != nil {
+		log.Printf("Error: Get all transactions")
+		return graphqlTransactions, err
+	}
+
+	// Parse transactions of account
+	for _, transaction := range transactions {
+		graphqlTransaction := &model.Transaction{
+			ID:          transaction.ID,
+			Description: transaction.Description,
+			Date:        int(transaction.Date.UnixMilli()),
+			Amount:      transaction.Amount,
+			Category:    transaction.Category,
+		}
+		graphqlTransactions = append(graphqlTransactions, graphqlTransaction)
+	}
+
+	return graphqlTransactions, nil
+}
+
 // Login is the resolver for the login field.
 func (r *mutationResolver) Login(ctx context.Context, username string, password string) (string, error) {
 	// Set user
@@ -632,169 +712,6 @@ func (r *queryResolver) TokenWithCode(ctx context.Context, code string) (string,
 	return santander.GetTokenWithCode(userAuth.ID, code)
 }
 
-// Accounts is the resolver for the accounts field.
-func (r *userResolver) Accounts(ctx context.Context, obj *model.User) ([]*model.Account, error) {
-	// Set variables
-	var userAuth *users.User
-	var graphqlAccounts []*model.Account
-
-	log.Printf("Resolver: Accounts-User")
-
-	// Get user from context
-	if userAuth = middleware.ForContext(ctx); userAuth == nil {
-		log.Printf("Error: Access denied")
-		return graphqlAccounts, fmt.Errorf("access denied")
-	}
-
-	// Get all accounts of user
-	accounts, err := accounts.GetAllAccounts(obj.ID)
-	if err != nil {
-		log.Printf("Error: Get all accounts")
-		return graphqlAccounts, err
-	}
-
-	// Parse accounts of user
-	for _, account := range accounts {
-		graphqlAccount := &model.Account{
-			ID:       account.ID,
-			Iban:     account.Iban,
-			Name:     account.Name,
-			Currency: account.Currency,
-			Amount:   account.Amount,
-			Bank:     account.Bank,
-		}
-		graphqlAccounts = append(graphqlAccounts, graphqlAccount)
-	}
-
-	return graphqlAccounts, nil
-}
-
-// Transactions is the resolver for the transactions field.
-func (r *userResolver) Transactions(ctx context.Context, obj *model.User) ([]*model.Transaction, error) {
-	// Set variables
-	var userAuth *users.User
-	var graphqlTransactions []*model.Transaction
-
-	log.Printf("Resolver: Transactions-User")
-
-	// Get user from context
-	if userAuth = middleware.ForContext(ctx); userAuth == nil {
-		log.Printf("Error: Access denied")
-		return graphqlTransactions, fmt.Errorf("access denied")
-	}
-
-	// Get all accounts of user
-	accounts, err := accounts.GetAllAccounts(obj.ID)
-	if err != nil {
-		log.Printf("Error: Get all accounts")
-		return graphqlTransactions, err
-	}
-
-	// Iterate for every account
-	for _, account := range accounts {
-		// Get all transactions of account
-		transactions, err := transactions.GetAllTransactions(account.ID)
-		if err != nil {
-			log.Printf("Error: Get all transactions")
-			return graphqlTransactions, err
-		}
-
-		// Parse transactions of account
-		for _, transaction := range transactions {
-			graphqlTransaction := &model.Transaction{
-				ID:          transaction.ID,
-				Description: transaction.Description,
-				Date:        int(transaction.Date.UnixMilli()),
-				Amount:      transaction.Amount,
-				Category:    transaction.Category,
-			}
-			graphqlTransactions = append(graphqlTransactions, graphqlTransaction)
-		}
-	}
-
-	return graphqlTransactions, nil
-}
-
-// User is the resolver for the user field.
-func (r *accountResolver) User(ctx context.Context, obj *model.Account) (*model.User, error) {
-	// Set variables
-	var userAuth *users.User
-	var account *accounts.Account
-	var user *users.User
-
-	log.Printf("Resolver: User-Account")
-
-	// Get user from context
-	if userAuth = middleware.ForContext(ctx); userAuth == nil {
-		log.Printf("Error: Access denied")
-		return &model.User{}, fmt.Errorf("access denied")
-	}
-
-	account.ID = obj.ID
-
-	// Get account in db
-	err := account.GetAccountById("")
-	if err != nil {
-		log.Printf("Error: Get account")
-		return &model.User{}, err
-	}
-
-	user.ID = account.UserID
-
-	// Get user
-	err = user.GetUserById()
-	if err != nil {
-		log.Printf("Error: Get user")
-		return &model.User{}, err
-	}
-
-	// Parse to model.User
-	graphqlUser := &model.User{
-		ID:       user.ID,
-		Username: user.Username,
-		Password: user.Password,
-		Role:     user.Role,
-	}
-
-	return graphqlUser, nil
-}
-
-// Transactions is the resolver for the transactions field.
-func (r *accountResolver) Transactions(ctx context.Context, obj *model.Account) ([]*model.Transaction, error) {
-	// Set variables
-	var userAuth *users.User
-	var graphqlTransactions []*model.Transaction
-
-	log.Printf("Resolver: Transactions-Account")
-
-	// Get user from context
-	if userAuth = middleware.ForContext(ctx); userAuth == nil {
-		log.Printf("Error: Access denied")
-		return graphqlTransactions, fmt.Errorf("access denied")
-	}
-
-	// Get all transactions of account
-	transactions, err := transactions.GetAllTransactions(obj.ID)
-	if err != nil {
-		log.Printf("Error: Get all transactions")
-		return graphqlTransactions, err
-	}
-
-	// Parse transactions of account
-	for _, transaction := range transactions {
-		graphqlTransaction := &model.Transaction{
-			ID:          transaction.ID,
-			Description: transaction.Description,
-			Date:        int(transaction.Date.UnixMilli()),
-			Amount:      transaction.Amount,
-			Category:    transaction.Category,
-		}
-		graphqlTransactions = append(graphqlTransactions, graphqlTransaction)
-	}
-
-	return graphqlTransactions, nil
-}
-
 // User is the resolver for the user field.
 func (r *transactionResolver) User(ctx context.Context, obj *model.Transaction) (*model.User, error) {
 	// Set variables
@@ -893,6 +810,89 @@ func (r *transactionResolver) Account(ctx context.Context, obj *model.Transactio
 	}
 
 	return graphqlAccount, nil
+}
+
+// Accounts is the resolver for the accounts field.
+func (r *userResolver) Accounts(ctx context.Context, obj *model.User) ([]*model.Account, error) {
+	// Set variables
+	var userAuth *users.User
+	var graphqlAccounts []*model.Account
+
+	log.Printf("Resolver: Accounts-User")
+
+	// Get user from context
+	if userAuth = middleware.ForContext(ctx); userAuth == nil {
+		log.Printf("Error: Access denied")
+		return graphqlAccounts, fmt.Errorf("access denied")
+	}
+
+	// Get all accounts of user
+	accounts, err := accounts.GetAllAccounts(obj.ID)
+	if err != nil {
+		log.Printf("Error: Get all accounts")
+		return graphqlAccounts, err
+	}
+
+	// Parse accounts of user
+	for _, account := range accounts {
+		graphqlAccount := &model.Account{
+			ID:       account.ID,
+			Iban:     account.Iban,
+			Name:     account.Name,
+			Currency: account.Currency,
+			Amount:   account.Amount,
+			Bank:     account.Bank,
+		}
+		graphqlAccounts = append(graphqlAccounts, graphqlAccount)
+	}
+
+	return graphqlAccounts, nil
+}
+
+// Transactions is the resolver for the transactions field.
+func (r *userResolver) Transactions(ctx context.Context, obj *model.User) ([]*model.Transaction, error) {
+	// Set variables
+	var userAuth *users.User
+	var graphqlTransactions []*model.Transaction
+
+	log.Printf("Resolver: Transactions-User")
+
+	// Get user from context
+	if userAuth = middleware.ForContext(ctx); userAuth == nil {
+		log.Printf("Error: Access denied")
+		return graphqlTransactions, fmt.Errorf("access denied")
+	}
+
+	// Get all accounts of user
+	accounts, err := accounts.GetAllAccounts(obj.ID)
+	if err != nil {
+		log.Printf("Error: Get all accounts")
+		return graphqlTransactions, err
+	}
+
+	// Iterate for every account
+	for _, account := range accounts {
+		// Get all transactions of account
+		transactions, err := transactions.GetAllTransactions(account.ID)
+		if err != nil {
+			log.Printf("Error: Get all transactions")
+			return graphqlTransactions, err
+		}
+
+		// Parse transactions of account
+		for _, transaction := range transactions {
+			graphqlTransaction := &model.Transaction{
+				ID:          transaction.ID,
+				Description: transaction.Description,
+				Date:        int(transaction.Date.UnixMilli()),
+				Amount:      transaction.Amount,
+				Category:    transaction.Category,
+			}
+			graphqlTransactions = append(graphqlTransactions, graphqlTransaction)
+		}
+	}
+
+	return graphqlTransactions, nil
 }
 
 // Account returns AccountResolver implementation.

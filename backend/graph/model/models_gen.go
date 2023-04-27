@@ -14,7 +14,7 @@ type Account struct {
 	Name         string         `json:"name"`
 	Currency     string         `json:"currency"`
 	Amount       float64        `json:"amount"`
-	Bank         string         `json:"Bank"`
+	Bank         string         `json:"bank"`
 	User         *User          `json:"user"`
 	Transactions []*Transaction `json:"transactions"`
 }
