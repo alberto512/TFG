@@ -9,8 +9,11 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
+	"tfg/internal/accounts"
 	"tfg/internal/mongo"
+	"tfg/internal/transactions"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -230,7 +233,7 @@ func getToken(userId string) (string, error) {
 	return userToken.AccessToken, nil
 }
 
-func refreshAccount(accessToken string, iban string) (error) {
+func refreshAccount(accessToken string, iban string, userId string) (error) {
 	log.Printf("Refresh account")
 	
 	// Create the request
@@ -258,12 +261,6 @@ func refreshAccount(accessToken string, iban string) (error) {
 	}
 	defer res.Body.Close()
 
-	/*resBody, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		fmt.Printf("client: could not read response body: %s\n", err)
-		os.Exit(1)
-	}*/
-
 	// Decode the response
 	response := &ResponseAccountEndpoint{}
 	err = json.NewDecoder(res.Body).Decode(response)
@@ -272,7 +269,24 @@ func refreshAccount(accessToken string, iban string) (error) {
         return err
 	}
 
-	log.Printf("Info: Response 1 decoded %s", response)
+	// Save account in database
+	var account accounts.Account
+	account.Iban = response.Account.Iban
+	account.Name = response.Account.Name
+	account.Currency = response.Account.Currency
+	account.Amount, err = strconv.ParseFloat(response.Account.Balance.Amount, 64)
+	if err != nil {
+		log.Printf("Error: Parsing amount")
+        return err
+	}
+	account.Bank = "Santander"
+	account.UserID = userId
+
+	err = account.Create()
+	if err != nil {
+		log.Printf("Error: Creating account")
+        return err
+	}
 
 	// Create body
 	body := []byte(`{
@@ -311,22 +325,37 @@ func refreshAccount(accessToken string, iban string) (error) {
 	defer res.Body.Close()
 
 	// Decode the response
-	response2 := &ResponseTransactionsEndpoint{}
-	err = json.NewDecoder(res.Body).Decode(response2)
+	responseTransactions := &ResponseTransactionsEndpoint{}
+	err = json.NewDecoder(res.Body).Decode(responseTransactions)
 	if err != nil {
 		log.Printf("Error: Decoding response")
         return err
 	}
 
-	log.Printf("Info: Response 2 decoded %s", response2)
+	// Save transactions in database
+	for _, element := range responseTransactions.Account.Transactions {
+		var transaction transactions.Transaction
+		
+		transaction.Description = element.Description
+		transaction.Date, err = time.Parse("2006-01-02", element.ValueDate)
+		if err != nil {
+			log.Printf("Error: Parsing date")
+			return err
+		}
+		transaction.Amount, err = strconv.ParseFloat(element.Amount.Content, 64)
+		if err != nil {
+			log.Printf("Error: Parsing amount")
+			return err
+		}
+		transaction.Category = "Default"
+		transaction.AccountID = account.ID
 
-	/*resBody, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		fmt.Printf("client: could not read response body: %s\n", err)
-		os.Exit(1)
+		err = transaction.Create()
+		if err != nil {
+			log.Printf("Error: Creating transaction")
+			return err
+		}
 	}
-	log.Printf("Info: Response %s", resBody)
-	*/
 
 	return nil
 }
@@ -431,7 +460,7 @@ func RefreshData(userId string) (error) {
 
 	// Refresh each account from the response
 	for _, element := range response.AccountList {
-		err := refreshAccount(accessToken, element.Iban)
+		err := refreshAccount(accessToken, element.Iban, userId)
 		if err != nil {
 			log.Printf("Error: Refreshing account")
         	return err
