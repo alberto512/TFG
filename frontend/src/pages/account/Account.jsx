@@ -41,23 +41,13 @@ const Account = () => {
       }
     );
 
-    const responseDecoded = response.data.data.accountById;
-
-    console.log(responseDecoded);
-
-    setAccount({
-      iban: responseDecoded[account][0].account.iban,
-      currency: responseDecoded[account][0].account.currency,
-      amount: responseDecoded[account][0].account.balance.amount,
-      transactions: responseDecoded[account][1].account.transactions,
-    });
+    setAccount(response.data.data.accountById);
+    console.log('setAccount');
   };
 
   useEffect(() => {
     getAccount();
   }, []);
-
-  console.log(account);
 
   return (
     <div className='wrapper'>

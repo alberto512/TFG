@@ -34,8 +34,9 @@ const Accounts = () => {
         },
       }
     );
-
     const responseDecoded = response.data.data.accounts;
+
+    console.log(responseDecoded);
 
     const accounts = [];
 
