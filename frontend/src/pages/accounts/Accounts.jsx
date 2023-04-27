@@ -35,15 +35,9 @@ const Accounts = () => {
       }
     );
 
-    console.log(response.data.data.accounts);
-
-    //JSON.parse(response.data.data.accounts);
-
     const responseDecoded = response.data.data.accounts;
 
     const accounts = [];
-
-    console.log(responseDecoded);
 
     for (const account in responseDecoded) {
       accounts.push({

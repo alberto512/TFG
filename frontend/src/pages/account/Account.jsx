@@ -14,7 +14,23 @@ const Account = () => {
     const response = await axios.post(
       backendUrl,
       {
-        query: `query { accountById }`,
+        query: `query AccountById($id: String!) {
+          accountById(id: $id) {
+            id,
+            iban,
+            amount,
+            currency,
+            transactions {
+              id,
+              description,
+              amount,
+              date,
+            },
+          }
+        }`,
+        variables: {
+          id,
+        },
       },
       {
         headers: {
@@ -24,7 +40,7 @@ const Account = () => {
       }
     );
 
-    const responseDecoded = JSON.parse(response.data.data.accountsByToken);
+    const responseDecoded = response.data.data.accountsByToken;
 
     console.log(responseDecoded);
 
@@ -37,7 +53,7 @@ const Account = () => {
   };
 
   useEffect(() => {
-    //getAccount();
+    getAccount();
   }, []);
 
   return (
@@ -61,9 +77,9 @@ const Account = () => {
           >
             <span className='description'>{transaction.description}</span>
             <div className='transaction-info'>
-              <span>{transaction.valueDate}</span>
+              <span>{transaction.date}</span>
               <span>
-                {transaction.amount} {transaction.currency}
+                {transaction.amount} {account.currency}
               </span>
             </div>
           </div>
