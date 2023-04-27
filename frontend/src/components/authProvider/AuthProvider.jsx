@@ -56,7 +56,7 @@ const AuthProvider = ({ children }) => {
       setToken(response.data.data.login);
 
       if (navigationActive) {
-        const origin = location.state?.from?.pathname || '/dashboard';
+        const origin = location.state?.from?.pathname || '/accounts';
         navigate(origin);
       }
     } catch (error) {

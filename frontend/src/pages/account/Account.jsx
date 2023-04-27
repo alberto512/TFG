@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import axios from 'axios';
 import { useAuth } from 'components/authProvider/AuthProvider';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './Account.css';
 
 const Account = () => {
@@ -40,7 +41,7 @@ const Account = () => {
       }
     );
 
-    const responseDecoded = response.data.data.accountsByToken;
+    const responseDecoded = response.data.data.accountById;
 
     console.log(responseDecoded);
 
@@ -55,6 +56,12 @@ const Account = () => {
   useEffect(() => {
     getAccount();
   }, []);
+
+  if (!account) {
+    return (
+      <FontAwesomeIcon className='spinner' icon='fa-solid fa-spinner' spin />
+    );
+  }
 
   return (
     <div className='wrapper'>
