@@ -37,7 +37,9 @@ const Accounts = () => {
 
     console.log(response.data.data.accounts);
 
-    const responseDecoded = JSON.parse(response.data.data.accounts);
+    //JSON.parse(response.data.data.accounts);
+
+    const responseDecoded = response.data.data.accounts;
 
     const accounts = [];
 
@@ -45,11 +47,13 @@ const Accounts = () => {
 
     for (const account in responseDecoded) {
       accounts.push({
-        iban: responseDecoded[account][0].account.iban,
-        type: responseDecoded[account][0].account.name,
-        currency: responseDecoded[account][0].account.currency,
-        amount: responseDecoded[account][0].account.balance.amount,
-        transactions: responseDecoded[account][1].account.transactions,
+        id: responseDecoded[account].id,
+        iban: responseDecoded[account].iban,
+        amount: responseDecoded[account].amount,
+        bank: responseDecoded[account].bank,
+        type: responseDecoded[account].name,
+        amount: responseDecoded[account].amount,
+        currency: responseDecoded[account].currency,
       });
     }
 
