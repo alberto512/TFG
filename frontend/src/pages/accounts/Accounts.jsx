@@ -59,11 +59,11 @@ const Accounts = () => {
       }
     );
 
-    const responseDecoded = JSON.parse(response.data.data.accountsByToken);
-
-    console.log(responseDecoded);
-
+    console.log(response.data.data.refreshBankData);
     setRefreshLoading(false);
+    setLoading(true);
+    getAccounts();
+    setLoading(false);
   };
 
   return (
