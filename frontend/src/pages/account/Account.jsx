@@ -59,7 +59,7 @@ const Account = () => {
 
   console.log(account);
 
-  if (!account) {
+  if (Object.keys(account).length === 0) {
     return (
       <FontAwesomeIcon className='spinner' icon='fa-solid fa-spinner' spin />
     );
