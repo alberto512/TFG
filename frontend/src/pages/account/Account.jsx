@@ -15,7 +15,7 @@ const Account = () => {
     const response = await axios.post(
       backendUrl,
       {
-        query: `query AccountById($id: String!) {
+        query: `query AccountById($id: ID!) {
           accountById(id: $id) {
             id,
             iban,
@@ -59,41 +59,43 @@ const Account = () => {
 
   console.log(account);
 
-  if (Object.keys(account).length === 0) {
-    return (
-      <FontAwesomeIcon className='spinner' icon='fa-solid fa-spinner' spin />
-    );
-  }
-
   return (
     <div className='wrapper'>
-      <div className='title-account-wrapper'>
-        <span className='title-account'>{account.iban}</span>
-        <span
-          className={
-            account.amount <= 0 ? 'amount-account-negative' : 'amount-account'
-          }
-        >
-          {account.amount} {account.currency}
-        </span>
-      </div>
-      <div className='scroller'>
-        {account.transactions.map((transaction) => (
-          <div
-            className={`transaction-wrapper ${
-              transaction.amount <= 0 ? 'transaction-wrapper-negative' : ''
-            }`}
-          >
-            <span className='description'>{transaction.description}</span>
-            <div className='transaction-info'>
-              <span>{transaction.date}</span>
-              <span>
-                {transaction.amount} {account.currency}
-              </span>
-            </div>
+      {Object.keys(account).length === 0 ? (
+        <FontAwesomeIcon className='spinner' icon='fa-solid fa-spinner' spin />
+      ) : (
+        <>
+          <div className='title-account-wrapper'>
+            <span className='title-account'>{account.iban}</span>
+            <span
+              className={
+                account.amount <= 0
+                  ? 'amount-account-negative'
+                  : 'amount-account'
+              }
+            >
+              {account.amount} {account.currency}
+            </span>
           </div>
-        ))}
-      </div>
+          <div className='scroller'>
+            {account.transactions.map((transaction) => (
+              <div
+                className={`transaction-wrapper ${
+                  transaction.amount <= 0 ? 'transaction-wrapper-negative' : ''
+                }`}
+              >
+                <span className='description'>{transaction.description}</span>
+                <div className='transaction-info'>
+                  <span>{transaction.date}</span>
+                  <span>
+                    {transaction.amount} {account.currency}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 };
