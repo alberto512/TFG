@@ -42,7 +42,6 @@ const Account = () => {
     );
 
     setAccount(response.data.data.accountById);
-    console.log('setAccount');
   };
 
   useEffect(() => {
@@ -70,6 +69,7 @@ const Account = () => {
           <div className='scroller'>
             {account.transactions.map((transaction) => (
               <div
+                key={transaction.id}
                 className={`transaction-wrapper ${
                   transaction.amount <= 0 ? 'transaction-wrapper-negative' : ''
                 }`}

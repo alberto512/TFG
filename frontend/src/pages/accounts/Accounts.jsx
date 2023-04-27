@@ -34,25 +34,8 @@ const Accounts = () => {
         },
       }
     );
-    const responseDecoded = response.data.data.accounts;
 
-    console.log(responseDecoded);
-
-    const accounts = [];
-
-    for (const account in responseDecoded) {
-      accounts.push({
-        id: responseDecoded[account].id,
-        iban: responseDecoded[account].iban,
-        amount: responseDecoded[account].amount,
-        bank: responseDecoded[account].bank,
-        type: responseDecoded[account].name,
-        amount: responseDecoded[account].amount,
-        currency: responseDecoded[account].currency,
-      });
-    }
-
-    setAccounts(accounts);
+    setAccounts(response.data.data.accounts);
   };
 
   useEffect(() => {
