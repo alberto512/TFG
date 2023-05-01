@@ -179,10 +179,14 @@ func (account *Account) GetAccountByIban(userId string) error {
 	// Decode query
 	cursor.Next(mongo.GetCtx())
 
+	println(account)
+
 	if err = cursor.Decode(&account); err != nil {
 		log.Printf("Error: Decoding account")
 		return err
 	}
+
+	println(account)
 
 	return nil
 }
