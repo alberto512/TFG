@@ -281,25 +281,22 @@ func refreshAccount(accessToken string, iban string, userId string) (error) {
 	// Save account in database
 	var account accounts.Account
 	account.Iban = response.Account.Iban
-
+	account.Name = response.Account.Name
+	account.Currency = response.Account.Currency
 	amount, err := strconv.ParseFloat(response.Account.Balance.Amount, 64)
 	if err != nil {
 		log.Printf("Error: Parsing amount")
-		return err
+        return err
 	}
+	account.Amount = amount
+	account.Bank = "Santander"
+	account.UserID = userId
 
 	updateDate := time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC)
 
 	// Check if account exists. Create it if not or update it if it does
 	err = account.GetAccountByIban(userId)
 	if err != nil {
-		account.Iban = response.Account.Iban
-		account.Name = response.Account.Name
-		account.Currency = response.Account.Currency
-		account.Amount = amount
-		account.Bank = "Santander"
-		account.UserID = userId
-
 		err = account.Create()
 		if err != nil {
 			log.Printf("Error: Creating account")
@@ -320,7 +317,7 @@ func refreshAccount(accessToken string, iban string, userId string) (error) {
 	days := time.Since(updateDate).Hours() / 24
 
 	if days > 90 {
-		dateFrom = time.Now().AddDate(0, 0, -90).Format(time.RFC3339)
+		dateFrom = time.Now().AddDate(0, 0, -89).Format(time.RFC3339)
 	}
 
 	// Create body
