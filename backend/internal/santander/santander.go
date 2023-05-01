@@ -312,13 +312,13 @@ func refreshAccount(accessToken string, iban string, userId string) (error) {
 		}
 	}
 
-	dateTo := time.Now().Format(time.RFC3339)
-	dateFrom := updateDate.Format(time.RFC3339)
+	dateTo := time.Now().Format(time.DateOnly)
+	dateFrom := updateDate.Format(time.DateOnly)
 
 	days := time.Since(updateDate).Hours() / 24
 
 	if days > 90 {
-		dateFrom = time.Now().AddDate(0, 0, -90).Format(time.RFC3339)
+		dateFrom = time.Now().AddDate(0, 0, -90).Format(time.DateOnly)
 	}
 
 	// Create body
@@ -382,7 +382,7 @@ func refreshAccount(accessToken string, iban string, userId string) (error) {
 		var transaction transactions.Transaction
 		
 		transaction.Description = element.Description
-		transaction.Date, err = time.Parse(time.RFC3339, element.ValueDate)
+		transaction.Date, err = time.Parse(time.DateOnly, element.ValueDate)
 		if err != nil {
 			log.Printf("Error: Parsing date")
 			return err
