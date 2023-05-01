@@ -5,6 +5,7 @@ import (
 	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -317,7 +318,7 @@ func refreshAccount(accessToken string, iban string, userId string) (error) {
 	days := time.Since(updateDate).Hours() / 24
 
 	if days > 90 {
-		dateFrom = time.Now().AddDate(0, 0, -89).Format(time.RFC3339)
+		dateFrom = time.Now().AddDate(0, 0, -90).Format(time.RFC3339)
 	}
 
 	// Create body
@@ -330,11 +331,15 @@ func refreshAccount(accessToken string, iban string, userId string) (error) {
 		Order: "A",
 	}
 
+	fmt.Println(body)
+
 	parsedBody, err := json.Marshal(body)
 	if err != nil {
 		log.Printf("Error: Encoding body")
 		return err
 	}
+
+	fmt.Println(parsedBody)
 	
 	// Create the request
 	req, err = http.NewRequest("POST", movementsEndpoint + "/" + iban, bytes.NewBuffer(parsedBody))
@@ -358,6 +363,8 @@ func refreshAccount(accessToken string, iban string, userId string) (error) {
 	}
 	if res.StatusCode != http.StatusOK {
 		log.Printf("Error: Response %d", res.StatusCode)
+		resp, _ := ioutil.ReadAll(res.Body)
+		fmt.Println(resp)
         return fmt.Errorf("error %d", res.StatusCode)
 	}
 	defer res.Body.Close()
