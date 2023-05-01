@@ -10,11 +10,16 @@ import Accounts from 'pages/accounts/Accounts';
 import RegisterBank from 'pages/registerBank/RegisterBank';
 import SantanderLogin from 'pages/santander/SantanderLogin';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faBars, faXmark, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import {
+  faBars,
+  faXmark,
+  faSpinner,
+  faPenToSquare,
+} from '@fortawesome/free-solid-svg-icons';
 import './App.css';
 import Account from 'pages/account/Account';
 
-library.add(faBars, faXmark, faSpinner);
+library.add(faBars, faXmark, faSpinner, faPenToSquare);
 
 function App() {
   return (

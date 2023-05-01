@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import axios from 'axios';
 import { useAuth } from 'components/authProvider/AuthProvider';
@@ -11,11 +11,12 @@ const Account = () => {
   const backendUrl = process.env.REACT_APP_BACKEND_URL;
   const [account, setAccount] = useState({});
 
-  const getAccount = async () => {
-    const response = await axios.post(
-      backendUrl,
-      {
-        query: `query AccountById($id: ID!) {
+  const getAccount = useCallback(() => {
+    const getData = async () => {
+      const response = await axios.post(
+        backendUrl,
+        {
+          query: `query AccountById($id: ID!) {
           accountById(id: $id) {
             id,
             iban,
@@ -29,24 +30,34 @@ const Account = () => {
             },
           }
         }`,
-        variables: {
-          id,
+          variables: {
+            id,
+          },
         },
-      },
-      {
-        headers: {
-          Authorization: token,
-          withCredentials: true,
-        },
-      }
-    );
+        {
+          headers: {
+            Authorization: token,
+            withCredentials: true,
+          },
+        }
+      );
 
-    setAccount(response.data.data.accountById);
+      setAccount(response.data.data.accountById);
+    };
+
+    getData();
+  }, [token, backendUrl, id]);
+
+  const getDate = (date) => {
+    const newDate = new Date(date);
+    return `${newDate.getDate()}/${
+      newDate.getMonth() + 1
+    }/${newDate.getFullYear()}`;
   };
 
   useEffect(() => {
     getAccount();
-  }, []);
+  }, [getAccount]);
 
   return (
     <div className='wrapper'>
@@ -67,22 +78,26 @@ const Account = () => {
             </span>
           </div>
           <div className='scroller'>
-            {account.transactions.map((transaction) => (
-              <div
-                key={transaction.id}
-                className={`transaction-wrapper ${
-                  transaction.amount <= 0 ? 'transaction-wrapper-negative' : ''
-                }`}
-              >
-                <span className='description'>{transaction.description}</span>
-                <div className='transaction-info'>
-                  <span>{transaction.date}</span>
-                  <span>
-                    {transaction.amount} {account.currency}
-                  </span>
+            {account.transactions
+              .sort((a, b) => b.date - a.date)
+              .map((transaction) => (
+                <div
+                  key={transaction.id}
+                  className={`transaction-wrapper ${
+                    transaction.amount <= 0
+                      ? 'transaction-wrapper-negative'
+                      : ''
+                  }`}
+                >
+                  <span className='description'>{transaction.description}</span>
+                  <div className='transaction-info'>
+                    <span>{getDate(transaction.date)}</span>
+                    <span>
+                      {transaction.amount} {account.currency}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
         </>
       )}

@@ -17,15 +17,6 @@ const SantanderLogin = () => {
   const redirectUri = process.env.REACT_APP_FRONTEND_URL + 'santanderLogin/';
   const [isToken, setIsToken] = useState(false);
 
-  const body = {
-    access: {
-      accounts: [],
-      balances: [],
-      transactions: [],
-    },
-    recurringIndicator: true,
-  };
-
   useEffect(() => {
     const getToken = async () => {
       const response = await axios.post(
@@ -51,6 +42,16 @@ const SantanderLogin = () => {
         navigate('/accounts');
       } else {
         localStorage.setItem('Authorize', true);
+
+        const body = {
+          access: {
+            accounts: [],
+            balances: [],
+            transactions: [],
+          },
+          recurringIndicator: true,
+        };
+
         await axios
           .post(
             santanderUrlAuthorize +
@@ -97,6 +98,7 @@ const SantanderLogin = () => {
     redirectUri,
     santanderUrlPrestep,
     santanderUrlAuthorize,
+    navigate,
   ]);
 
   return (

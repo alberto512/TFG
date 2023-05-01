@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from 'components/authProvider/AuthProvider';
 import { useNavigate } from 'react-router-dom';
@@ -13,11 +13,12 @@ const Accounts = () => {
   const [loading, setLoading] = useState(false);
   const [accounts, setAccounts] = useState([]);
 
-  const getAccounts = async () => {
-    const response = await axios.post(
-      backendUrl,
-      {
-        query: `query { accounts() {
+  const getAccounts = useCallback(() => {
+    const getData = async () => {
+      const response = await axios.post(
+        backendUrl,
+        {
+          query: `query { accounts() {
           id,
           iban,
           name,
@@ -26,27 +27,30 @@ const Accounts = () => {
           bank,
         } 
       }`,
-      },
-      {
-        headers: {
-          Authorization: token,
-          withCredentials: true,
         },
-      }
-    );
+        {
+          headers: {
+            Authorization: token,
+            withCredentials: true,
+          },
+        }
+      );
 
-    setAccounts(response.data.data.accounts);
-  };
+      setAccounts(response.data.data.accounts);
+      setLoading(false);
+    };
+
+    getData();
+  }, [token, backendUrl]);
 
   useEffect(() => {
     setLoading(true);
     getAccounts();
-    setLoading(false);
-  }, []);
+  }, [getAccounts]);
 
   const refreshData = async () => {
     setRefreshLoading(true);
-    const response = await axios.post(
+    await axios.post(
       backendUrl,
       {
         query: `mutation { refreshBankData }`,
@@ -59,7 +63,6 @@ const Accounts = () => {
       }
     );
 
-    console.log(response.data.data.refreshBankData);
     setRefreshLoading(false);
     setLoading(true);
     getAccounts();
@@ -93,22 +96,30 @@ const Accounts = () => {
           accounts
             .sort((a, b) => a.bank.localeCompare(b.bank))
             .map((account) => (
-              <div
-                key={account.id}
-                className={`account-wrapper ${
-                  account.amount <= 0 ? 'account-wrapper-negative' : ''
-                }`}
-                onClick={() => navigate('/account/' + account.id)}
-              >
-                <span className='iban'>{account.iban}</span>
-                <div className='account-info'>
-                  <span>{account.bank}</span>
-                  <span>{account.name}</span>
+              <div className='account-container'>
+                <div
+                  key={account.id}
+                  className={`account-wrapper ${
+                    account.amount <= 0 ? 'account-wrapper-negative' : ''
+                  }`}
+                  onClick={() => navigate('/account/' + account.id)}
+                >
+                  <span className='iban'>{account.iban}</span>
+                  <div className='account-info'>
+                    <span>{account.bank}</span>
+                    <span>{account.name}</span>
+                  </div>
+                  <div className='account-balance'>
+                    <span>
+                      {account.amount} {account.currency}
+                    </span>
+                  </div>
                 </div>
-                <div className='account-balance'>
-                  <span>
-                    {account.amount} {account.currency}
-                  </span>
+                <div className='icon-wrapper'>
+                  <FontAwesomeIcon
+                    className='icon-category'
+                    icon='fa-solid fa-pen-to-square'
+                  />
                 </div>
               </div>
             ))

@@ -4,19 +4,21 @@ import (
 	"fmt"
 	"log"
 	"tfg/internal/mongo"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Account struct {
-    ID			string	`bson:"_id"`
-    Iban		string	`bson:"iban"`
-    Name		string	`bson:"name"`
-    Currency	string	`bson:"currency"`
-	Amount		float64	`bson:"amount"`
-	Bank		string  `bson:"bank"`
-	UserID		string	`bson:"userId"`
+    ID			string		`bson:"_id"`
+    Iban		string		`bson:"iban"`
+    Name		string		`bson:"name"`
+    Currency	string		`bson:"currency"`
+	Amount		float64		`bson:"amount"`
+	Bank		string		`bson:"bank"`
+	UpdateDate  time.Time	`bson:"updateDate"`
+	UserID		string		`bson:"userId"`
 }
 
 func (account *Account) Create() (error) {
@@ -36,6 +38,7 @@ func (account *Account) Create() (error) {
 		{Key: "currency", Value: account.Currency},
 		{Key: "amount", Value: account.Amount},
 		{Key: "bank", Value: account.Bank},
+		{Key: "updateDate", Value: time.Now()},
 		{Key: "userId", Value: id},
 	})
 	if err != nil {
@@ -140,6 +143,50 @@ func (account *Account) GetAccountById(userId string) error {
 	return nil
 }
 
+func (account *Account) GetAccountByIban(userId string) error {
+	log.Printf("Get account by iban")
+
+	// Query to get account by iban
+	query := bson.D{
+		{Key: "iban", Value: account.Iban},
+	}
+
+	if userId != "" {
+		// String id to ObjectId
+		userIdObject, err := primitive.ObjectIDFromHex(userId)
+		if err != nil {
+			log.Printf("Error: Convert string to id")
+			return err
+		}
+
+		// Change query to only search the user accounts
+		query = bson.D{
+			{Key: "userId", Value: userIdObject},
+			{Key: "iban", Value: account.Iban},
+		}
+	}
+
+	// Empty filter
+	filter := bson.D{}
+
+	// Execute query
+	cursor, err := mongo.Query("accounts", query, filter)
+	if err != nil {
+		log.Printf("Error: Get account in db")
+		return err
+	}
+
+	// Decode query
+	cursor.Next(mongo.GetCtx())
+
+	if err = cursor.Decode(&account); err != nil {
+		log.Printf("Error: Decoding account")
+		return err
+	}
+
+	return nil
+}
+
 func (account *Account) Update(userId string, iban *string, name *string, currency *string, amount *float64, bank *string) error {
 	log.Printf("Update account")
 
@@ -188,6 +235,7 @@ func (account *Account) Update(userId string, iban *string, name *string, curren
 		"currency": account.Currency,
 		"amount": account.Amount,
 		"bank": account.Bank,
+		"updateDate": time.Now(),
 		"userId": userID,
 	}
 

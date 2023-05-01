@@ -44,10 +44,21 @@
   height: 90%;
 }
 
+.spinner {
+  margin-top: 25px;
+}
+
+.account-container {
+  display: flex;
+}
+
 .account-wrapper {
   margin-top: 25px;
   margin-bottom: 25px;
+  margin-left: 125px;
+  margin-right: 25px;
   width: 500px;
+  height: 150px;
   border: 5px solid #00ddb2;
   border-radius: 15px;
   background-color: #091f22;
@@ -63,6 +74,24 @@
 .account-wrapper-negative {
   border: 5px solid #dd002b;
   color: #dd002b;
+}
+
+.icon-wrapper {
+  margin-top: 25px;
+  margin-bottom: 25px;
+  width: 100px;
+  border: 5px solid #00ddb2;
+  border-radius: 15px;
+  background-color: #091f22;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.icon-category {
+  height: 75px;
+  width: 75px;
+  color: #00ddb2;
 }
 
 .iban {

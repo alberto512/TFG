@@ -94,6 +94,15 @@ type ResponseAccountsEndpoint struct {
 	RequestId	string				`json:"requestId"`
 }
 
+type RequestBodyAccount struct {
+	Movement	string	`json:"movement"`
+	DateTo		string	`json:"date_to"`
+	DateFrom	string	`json:"date_from"`
+	AmountTo	int		`json:"amount_to"`
+	AmountFrom	int		`json:"amount_from"`
+	Order		string	`json:"order"`
+}
+
 func saveToken(userId string, token *ResponseTokenEndpoint) (error) {
 	log.Printf("Save token in database")
 
@@ -274,32 +283,61 @@ func refreshAccount(accessToken string, iban string, userId string) (error) {
 	account.Iban = response.Account.Iban
 	account.Name = response.Account.Name
 	account.Currency = response.Account.Currency
-	account.Amount, err = strconv.ParseFloat(response.Account.Balance.Amount, 64)
+	amount, err := strconv.ParseFloat(response.Account.Balance.Amount, 64)
 	if err != nil {
 		log.Printf("Error: Parsing amount")
         return err
 	}
+	account.Amount = amount
 	account.Bank = "Santander"
 	account.UserID = userId
 
-	err = account.Create()
+	updateDate := time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC)
+
+	// Check if account exists. Create it if not or update it if it does
+	err = account.GetAccountByIban(userId)
 	if err != nil {
-		log.Printf("Error: Creating account")
-        return err
+		err = account.Create()
+		if err != nil {
+			log.Printf("Error: Creating account")
+			return err
+		}
+	} else {
+		updateDate = account.UpdateDate
+		err = account.Update(userId, nil, &response.Account.Name, &response.Account.Currency, &amount, nil)
+		if err != nil {
+			log.Printf("Error: Updating account")
+			return err
+		}
+	}
+
+	dateTo := time.Now().Format(time.RFC3339)
+	dateFrom := updateDate.Format(time.RFC3339)
+
+	days := time.Since(updateDate).Hours() / 24
+
+	if days > 90 {
+		dateFrom = time.Now().AddDate(0, 0, -90).Format(time.RFC3339)
 	}
 
 	// Create body
-	body := []byte(`{
-		"movement": "BOTH",
-		"date_to": "2023-04-12",
-		"date_from": "2023-02-15",
-		"amount_to": 100000000,
-		"amount_from": 0,
-		"order": "A"
-	}`)
+	body := RequestBodyAccount{
+		Movement: "BOTH",
+		DateTo: dateTo,
+		DateFrom: dateFrom,
+		AmountTo: 100000000,
+		AmountFrom: 0,
+		Order: "A",
+	}
 
+	parsedBody, err := json.Marshal(body)
+	if err != nil {
+		log.Printf("Error: Encoding body")
+		return err
+	}
+	
 	// Create the request
-	req, err = http.NewRequest("POST", movementsEndpoint + "/" + iban, bytes.NewBuffer(body))
+	req, err = http.NewRequest("POST", movementsEndpoint + "/" + iban, bytes.NewBuffer(parsedBody))
 	if err != nil {
 		log.Printf("Error: Create request")
         return err
@@ -337,7 +375,7 @@ func refreshAccount(accessToken string, iban string, userId string) (error) {
 		var transaction transactions.Transaction
 		
 		transaction.Description = element.Description
-		transaction.Date, err = time.Parse("2006-01-02", element.ValueDate)
+		transaction.Date, err = time.Parse(time.RFC3339, element.ValueDate)
 		if err != nil {
 			log.Printf("Error: Parsing date")
 			return err
