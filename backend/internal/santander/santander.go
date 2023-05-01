@@ -5,7 +5,6 @@ import (
 	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -321,6 +320,10 @@ func refreshAccount(accessToken string, iban string, userId string) (error) {
 		dateFrom = time.Now().AddDate(0, 0, -90).Format(time.DateOnly)
 	}
 
+	if dateFrom == dateTo {
+		return nil
+	}
+
 	// Create body
 	body := RequestBodyAccount{
 		Movement: "BOTH",
@@ -363,8 +366,6 @@ func refreshAccount(accessToken string, iban string, userId string) (error) {
 	}
 	if res.StatusCode != http.StatusOK {
 		log.Printf("Error: Response %d", res.StatusCode)
-		resp, _ := ioutil.ReadAll(res.Body)
-		fmt.Println(resp)
         return fmt.Errorf("error %d", res.StatusCode)
 	}
 	defer res.Body.Close()
