@@ -150,6 +150,7 @@ func (r *mutationResolver) RefreshToken(ctx context.Context, token string) (stri
 func (r *mutationResolver) CreateUser(ctx context.Context, username string, password string, role model.Role) (*model.User, error) {
 	// Set user
 	var user users.User
+	var category categories.Category
 
 	log.Printf("Route: CreateUser")
 
@@ -166,12 +167,10 @@ func (r *mutationResolver) CreateUser(ctx context.Context, username string, pass
 	}
 
 	// Create default categories for user
-	var category *categories.Category
 	category.UserID = user.ID
 
 	// Food category
 	category.Name = "Food"
-
 	err = category.Create()
 	if err != nil {
 		log.Printf("Error: Create category")
@@ -180,7 +179,6 @@ func (r *mutationResolver) CreateUser(ctx context.Context, username string, pass
 
 	// Home category
 	category.Name = "Home"
-
 	err = category.Create()
 	if err != nil {
 		log.Printf("Error: Create category")
@@ -189,7 +187,6 @@ func (r *mutationResolver) CreateUser(ctx context.Context, username string, pass
 
 	// Lifestyle category
 	category.Name = "Lifestyle"
-
 	err = category.Create()
 	if err != nil {
 		log.Printf("Error: Create category")
@@ -198,7 +195,6 @@ func (r *mutationResolver) CreateUser(ctx context.Context, username string, pass
 
 	// Health category
 	category.Name = "Health"
-
 	err = category.Create()
 	if err != nil {
 		log.Printf("Error: Create category")
@@ -207,7 +203,6 @@ func (r *mutationResolver) CreateUser(ctx context.Context, username string, pass
 
 	// Shopping category
 	category.Name = "Shopping"
-
 	err = category.Create()
 	if err != nil {
 		log.Printf("Error: Create category")
@@ -216,7 +211,6 @@ func (r *mutationResolver) CreateUser(ctx context.Context, username string, pass
 
 	// Children category
 	category.Name = "Children"
-
 	err = category.Create()
 	if err != nil {
 		log.Printf("Error: Create category")
@@ -225,7 +219,6 @@ func (r *mutationResolver) CreateUser(ctx context.Context, username string, pass
 
 	// Vacation category
 	category.Name = "Vacation"
-
 	err = category.Create()
 	if err != nil {
 		log.Printf("Error: Create category")
@@ -234,7 +227,6 @@ func (r *mutationResolver) CreateUser(ctx context.Context, username string, pass
 
 	// Education category
 	category.Name = "Education"
-
 	err = category.Create()
 	if err != nil {
 		log.Printf("Error: Create category")
@@ -243,7 +235,6 @@ func (r *mutationResolver) CreateUser(ctx context.Context, username string, pass
 
 	// Salary category
 	category.Name = "Salary"
-
 	err = category.Create()
 	if err != nil {
 		log.Printf("Error: Create category")
