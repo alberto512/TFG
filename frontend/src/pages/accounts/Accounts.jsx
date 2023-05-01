@@ -96,30 +96,22 @@ const Accounts = () => {
           accounts
             .sort((a, b) => a.bank.localeCompare(b.bank))
             .map((account) => (
-              <div className='account-container'>
-                <div
-                  key={account.id}
-                  className={`account-wrapper ${
-                    account.amount <= 0 ? 'account-wrapper-negative' : ''
-                  }`}
-                  onClick={() => navigate('/account/' + account.id)}
-                >
-                  <span className='iban'>{account.iban}</span>
-                  <div className='account-info'>
-                    <span>{account.bank}</span>
-                    <span>{account.name}</span>
-                  </div>
-                  <div className='account-balance'>
-                    <span>
-                      {account.amount} {account.currency}
-                    </span>
-                  </div>
+              <div
+                key={account.id}
+                className={`account-wrapper ${
+                  account.amount <= 0 ? 'account-wrapper-negative' : ''
+                }`}
+                onClick={() => navigate('/account/' + account.id)}
+              >
+                <span className='iban'>{account.iban}</span>
+                <div className='account-info'>
+                  <span>{account.bank}</span>
+                  <span>{account.name}</span>
                 </div>
-                <div className='icon-wrapper'>
-                  <FontAwesomeIcon
-                    className='icon-category'
-                    icon='fa-solid fa-pen-to-square'
-                  />
+                <div className='account-balance'>
+                  <span>
+                    {account.amount} {account.currency}
+                  </span>
                 </div>
               </div>
             ))

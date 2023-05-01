@@ -5,7 +5,6 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  overflow-y: overlay;
 }
 
 .title-account-wrapper {
@@ -31,12 +30,23 @@
 }
 
 .scroller {
-  height: 90%;
+  height: 75%;
+  overflow-y: scroll;
+}
+
+.scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.account-container {
+  display: flex;
 }
 
 .transaction-wrapper {
   margin-top: 25px;
   margin-bottom: 25px;
+  margin-left: 125px;
+  margin-right: 25px;
   width: 500px;
   border: 5px solid #00ddb2;
   border-radius: 15px;
@@ -65,4 +75,32 @@
   width: 100%;
   display: flex;
   justify-content: space-around;
+}
+
+.icon-wrapper {
+  margin-top: 25px;
+  margin-bottom: 25px;
+  width: 100px;
+  border: 5px solid #00ddb2;
+  border-radius: 15px;
+  background-color: #091f22;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.icon-wrapper-negative {
+  border: 5px solid #dd002b;
+  color: #dd002b;
+}
+
+.icon-category {
+  height: 50px;
+  width: 50px;
+  color: #00ddb2;
+}
+
+.icon-category-negative {
+  color: #dd002b;
 }

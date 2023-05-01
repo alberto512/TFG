@@ -3,9 +3,11 @@ import { useParams } from 'react-router';
 import axios from 'axios';
 import { useAuth } from 'components/authProvider/AuthProvider';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useNavigate } from 'react-router-dom';
 import './Account.css';
 
 const Account = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
   const { token } = useAuth();
   const backendUrl = process.env.REACT_APP_BACKEND_URL;
@@ -81,20 +83,38 @@ const Account = () => {
             {account.transactions
               .sort((a, b) => b.date - a.date)
               .map((transaction) => (
-                <div
-                  key={transaction.id}
-                  className={`transaction-wrapper ${
-                    transaction.amount <= 0
-                      ? 'transaction-wrapper-negative'
-                      : ''
-                  }`}
-                >
-                  <span className='description'>{transaction.description}</span>
-                  <div className='transaction-info'>
-                    <span>{getDate(transaction.date)}</span>
-                    <span>
-                      {transaction.amount} {account.currency}
+                <div className='account-container' key={transaction.id}>
+                  <div
+                    className={`transaction-wrapper ${
+                      transaction.amount <= 0
+                        ? 'transaction-wrapper-negative'
+                        : ''
+                    }`}
+                  >
+                    <span className='description'>
+                      {transaction.description}
                     </span>
+                    <div className='transaction-info'>
+                      <span>{getDate(transaction.date)}</span>
+                      <span>
+                        {transaction.amount} {account.currency}
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    className={`icon-wrapper ${
+                      transaction.amount <= 0 ? 'icon-wrapper-negative' : ''
+                    }`}
+                  >
+                    <FontAwesomeIcon
+                      className={`icon-category ${
+                        transaction.amount <= 0 ? 'icon-category-negative' : ''
+                      }`}
+                      icon='fa-solid fa-pen-to-square'
+                      onClick={() =>
+                        navigate('/editCategory/' + transaction.id)
+                      }
+                    />
                   </div>
                 </div>
               ))}

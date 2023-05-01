@@ -18,6 +18,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import './App.css';
 import Account from 'pages/account/Account';
+import EditCategory from 'pages/editCategory/EditCategory';
 
 library.add(faBars, faXmark, faSpinner, faPenToSquare);
 
@@ -44,6 +45,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Account />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='editCategory/:id'
+          element={
+            <ProtectedRoute>
+              <EditCategory />
             </ProtectedRoute>
           }
         />

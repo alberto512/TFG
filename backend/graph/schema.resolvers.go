@@ -995,6 +995,10 @@ func (r *transactionResolver) Category(ctx context.Context, obj *model.Transacti
 		return &model.Category{}, err
 	}
 
+	if transaction.Category == "" {
+		return nil, err
+	}
+
 	category.ID = transaction.Category
 
 	err = category.GetCategoryById(userAuth.ID)

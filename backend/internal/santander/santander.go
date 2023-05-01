@@ -389,7 +389,7 @@ func refreshAccount(accessToken string, iban string, userId string) (error) {
 			log.Printf("Error: Parsing amount")
 			return err
 		}
-		transaction.Category = "Default"
+		transaction.Category = ""
 		transaction.AccountID = account.ID
 
 		err = transaction.Create()
