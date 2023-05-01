@@ -79,3 +79,5 @@ models:
         resolver: true
       account:
         resolver: true
+      category:
+        resolver: true

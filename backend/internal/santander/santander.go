@@ -334,15 +334,11 @@ func refreshAccount(accessToken string, iban string, userId string) (error) {
 		Order: "A",
 	}
 
-	fmt.Println(body)
-
 	parsedBody, err := json.Marshal(body)
 	if err != nil {
 		log.Printf("Error: Encoding body")
 		return err
 	}
-
-	fmt.Println(parsedBody)
 	
 	// Create the request
 	req, err = http.NewRequest("POST", movementsEndpoint + "/" + iban, bytes.NewBuffer(parsedBody))

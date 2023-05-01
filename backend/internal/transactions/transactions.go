@@ -178,6 +178,54 @@ func GetTransactionsByCategory(accountId string, category string) ([]Transaction
 	return transactions, nil
 }
 
+func GetTransactionsByCategoryAndDate(accountId string, category string, initDate time.Time, endDate time.Time) ([]Transaction, error) {
+	var transactions []Transaction
+
+	log.Printf("Get all transactions by category and date")
+
+	// Query to get all transactions by category and date
+	query := bson.D{
+		{Key: "category", Value: category},
+		{Key: "date", Value: bson.M{"$gte": initDate}},
+		{Key: "date", Value: bson.M{"$lte": endDate}},
+	}
+
+	if accountId != "" {
+		// String id to ObjectId
+		id, err := primitive.ObjectIDFromHex(accountId)
+		if err != nil {
+			log.Printf("Error: Convert string to id")
+			return transactions, err
+		}
+
+		// Change query to only search the account transactions
+		query = bson.D{
+			{Key: "accountId", Value: id},
+			{Key: "category", Value: category},
+			{Key: "date", Value: bson.M{"$gte": initDate}},
+			{Key: "date", Value: bson.M{"$lte": endDate}},
+		}
+	}
+
+	// Empty filter
+	filter := bson.D{}
+
+	// Execute query
+	cursor, err := mongo.Query("transactions", query, filter)
+	if err != nil {
+		log.Printf("Error: Get all transactions by category and date in db")
+		return transactions, err
+	}
+
+	// Decode query
+	if err = cursor.All(mongo.GetCtx(), &transactions); err != nil {
+		log.Printf("Error: Decoding transactions")
+		return transactions, err
+	}
+
+	return transactions, nil
+}
+
 
 func (transaction *Transaction) GetTransactionById(accountId string) error {
 	log.Printf("Get transaction by id")

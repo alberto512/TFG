@@ -4,6 +4,8 @@ type Mutation {
   createUser(username: String!, password: String!, role: Role!): User!
   updatePassword(id: ID!, password: String!): User!
   deleteUser(id: ID!): String!
+  createCategory(name: String!): Category!
+  deleteCategory(id: ID!): String!
   refreshBankData: String!
 }
 
@@ -17,6 +19,13 @@ type Query {
   transactionById(id: ID!): Transaction!
   transactionsByDate(initDate: Int!, endDate: Int!): [Transaction!]!
   transactionsByCategory(category: String!): [Transaction!]!
+  categories: [Category!]!
+  balances(
+    accountIds: [ID!]!
+    categoryIds: [ID!]!
+    initDate: Int!
+    endDate: Int!
+  ): [Balance!]!
   tokenWithCode(code: String!): String!
 }
 
@@ -50,7 +59,17 @@ type Transaction {
   description: String!
   date: Int!
   amount: Float!
-  category: String!
+  category: Category!
   user: User!
   account: Account!
+}
+
+type Category {
+  id: ID!
+  name: String!
+}
+
+type Balance {
+  amount: Float!
+  category: Category!
 }

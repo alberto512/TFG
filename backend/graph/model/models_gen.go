@@ -19,14 +19,24 @@ type Account struct {
 	Transactions []*Transaction `json:"transactions"`
 }
 
+type Balance struct {
+	Amount   float64   `json:"amount"`
+	Category *Category `json:"category"`
+}
+
+type Category struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
 type Transaction struct {
-	ID          string   `json:"id"`
-	Description string   `json:"description"`
-	Date        int      `json:"date"`
-	Amount      float64  `json:"amount"`
-	Category    string   `json:"category"`
-	User        *User    `json:"user"`
-	Account     *Account `json:"account"`
+	ID          string    `json:"id"`
+	Description string    `json:"description"`
+	Date        int       `json:"date"`
+	Amount      float64   `json:"amount"`
+	Category    *Category `json:"category"`
+	User        *User     `json:"user"`
+	Account     *Account  `json:"account"`
 }
 
 type User struct {
