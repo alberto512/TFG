@@ -77,7 +77,25 @@ const EditCategory = () => {
     getCategories();
   }, [getTransaction, getCategories]);
 
-  const saveCategory = (category) => {
+  const saveCategory = async (category) => {
+    await axios.post(
+      backendUrl,
+      {
+        query: `mutation UpdateTransaction($id: ID!, $category: ID!) {
+        updateTransaction(id: $id, category: $category)
+      }`,
+        variables: {
+          id,
+          category: category.id,
+        },
+      },
+      {
+        headers: {
+          Authorization: token,
+          withCredentials: true,
+        },
+      }
+    );
     setCategorySelected(category);
   };
 
@@ -90,7 +108,7 @@ const EditCategory = () => {
           <div className='title-transaction-wrapper'>
             <span className='title-transaction'>{transaction.description}</span>
             <span className='category-transaction'>
-              {categorySelected.name == ''
+              {categorySelected.name === ''
                 ? 'No category'
                 : categorySelected.name}
             </span>

@@ -29,6 +29,9 @@ const Account = () => {
               description,
               amount,
               date,
+              category {
+                name,
+              },
             },
           }
         }`,
@@ -94,6 +97,11 @@ const Account = () => {
                     <span className='description'>
                       {transaction.description}
                     </span>
+                    <span>
+                      {transaction.category.name === ''
+                        ? 'No category'
+                        : 'Category:  ' + transaction.category.name}
+                    </span>
                     <div className='transaction-info'>
                       <span>{getDate(transaction.date)}</span>
                       <span>
@@ -105,15 +113,13 @@ const Account = () => {
                     className={`icon-wrapper ${
                       transaction.amount <= 0 ? 'icon-wrapper-negative' : ''
                     }`}
+                    onClick={() => navigate('/editCategory/' + transaction.id)}
                   >
                     <FontAwesomeIcon
                       className={`icon-category ${
                         transaction.amount <= 0 ? 'icon-category-negative' : ''
                       }`}
                       icon='fa-solid fa-pen-to-square'
-                      onClick={() =>
-                        navigate('/editCategory/' + transaction.id)
-                      }
                     />
                   </div>
                 </div>
