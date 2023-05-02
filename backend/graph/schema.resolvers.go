@@ -732,6 +732,8 @@ func (r *queryResolver) TransactionByID(ctx context.Context, id string) (*model.
 		return graphqlTransaction, fmt.Errorf("not found")
 	}
 
+	fmt.Println("Hola2222")
+
 	return graphqlTransaction, nil
 }
 
