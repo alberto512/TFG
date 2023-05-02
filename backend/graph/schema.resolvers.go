@@ -703,12 +703,15 @@ func (r *queryResolver) TransactionByID(ctx context.Context, id string) (*model.
 		// Get transaction by id
 		fmt.Println("transaction", transaction)
 		err := transaction.GetTransactionById(account.ID)
-		if err != nil {
+		if err != nil || transaction.Description == "" {
 			log.Printf("Error: Get account")
 			continue
 		}
 
-		fmt.Println("transaction", transaction)
+		fmt.Println("transaction.ID", transaction.ID)
+		fmt.Println("transaction.Description", transaction.Description)
+		fmt.Println("int(transaction.Date.UnixMilli())", int(transaction.Date.UnixMilli()))
+		fmt.Println("transaction.Amount", transaction.Amount)
 
 		// Parse to model.Transaction
 		graphqlTransaction = &model.Transaction{
