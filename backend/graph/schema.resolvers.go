@@ -23,8 +23,8 @@ import (
 func (r *accountResolver) User(ctx context.Context, obj *model.Account) (*model.User, error) {
 	// Set variables
 	var userAuth *users.User
-	var account *accounts.Account
-	var user *users.User
+	var account accounts.Account
+	var user users.User
 
 	log.Printf("Resolver: User-Account")
 
@@ -881,8 +881,8 @@ func (r *queryResolver) Categories(ctx context.Context) ([]*model.Category, erro
 func (r *queryResolver) Balances(ctx context.Context, accountIds []string, categoryIds []string, initDate int, endDate int) ([]*model.Balance, error) {
 	// Set variables
 	var userAuth *users.User
-	var account *accounts.Account
-	var category *categories.Category
+	var account accounts.Account
+	var category categories.Category
 	var graphqlBalances []*model.Balance
 	var userId string
 
@@ -979,28 +979,16 @@ func (r *queryResolver) TokenWithCode(ctx context.Context, code string) (string,
 func (r *transactionResolver) Category(ctx context.Context, obj *model.Transaction) (*model.Category, error) {
 	var userAuth *users.User
 	var transaction transactions.Transaction
-	var category *categories.Category
+	var category categories.Category
 
 	log.Printf("Resolver: Category-Transaction")
-
-	fmt.Println(1)
 
 	if userAuth = middleware.ForContext(ctx); userAuth == nil {
 		log.Printf("Error: Access denied")
 		return &model.Category{}, fmt.Errorf("access denied")
 	}
 
-	fmt.Println(2)
-
-	fmt.Println("2.1", obj)
-
-	fmt.Println("2.2", obj.ID)
-
 	transaction.ID = obj.ID
-
-	fmt.Println(3)
-
-	fmt.Println(transaction)
 
 	// Get transaction in db
 	err := transaction.GetTransactionById("")
@@ -1009,17 +997,11 @@ func (r *transactionResolver) Category(ctx context.Context, obj *model.Transacti
 		return &model.Category{}, err
 	}
 
-	fmt.Println(4)
-
 	if transaction.Category == "" {
 		return nil, err
 	}
 
-	fmt.Println(5)
-
 	category.ID = transaction.Category
-
-	fmt.Println(6)
 
 	err = category.GetCategoryById(userAuth.ID)
 	if err != nil {
@@ -1039,9 +1021,9 @@ func (r *transactionResolver) Category(ctx context.Context, obj *model.Transacti
 func (r *transactionResolver) User(ctx context.Context, obj *model.Transaction) (*model.User, error) {
 	// Set variables
 	var userAuth *users.User
-	var transaction *transactions.Transaction
-	var account *accounts.Account
-	var user *users.User
+	var transaction transactions.Transaction
+	var account accounts.Account
+	var user users.User
 
 	log.Printf("Resolver: User-Transaction")
 
@@ -1093,8 +1075,8 @@ func (r *transactionResolver) User(ctx context.Context, obj *model.Transaction) 
 func (r *transactionResolver) Account(ctx context.Context, obj *model.Transaction) (*model.Account, error) {
 	// Set variables
 	var userAuth *users.User
-	var transaction *transactions.Transaction
-	var account *accounts.Account
+	var transaction transactions.Transaction
+	var account accounts.Account
 
 	log.Printf("Resolver: Account-Transaction")
 
