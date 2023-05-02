@@ -729,7 +729,10 @@ func (r *queryResolver) TransactionByID(ctx context.Context, id string) (*model.
 	fmt.Println("Hola 2", graphqlTransaction.Account)
 	fmt.Println("Hola 3", graphqlTransaction.Account == nil)
 
-	
+	if graphqlTransaction.Account == nil {
+		log.Printf("Error: Get account")
+		return graphqlTransaction, fmt.Errorf("not found")
+	}
 
 	fmt.Println("Hola4")
 
@@ -990,6 +993,8 @@ func (r *transactionResolver) Category(ctx context.Context, obj *model.Transacti
 	var userAuth *users.User
 	var transaction *transactions.Transaction
 	var category *categories.Category
+
+	log.Printf("Resolver: Category-Transaction")
 
 	if userAuth = middleware.ForContext(ctx); userAuth == nil {
 		log.Printf("Error: Access denied")
