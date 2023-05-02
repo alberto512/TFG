@@ -260,7 +260,7 @@ func (transaction *Transaction) GetTransactionById(accountId string) error {
 	// Empty filter
 	filter := bson.D{}
 
-	fmt.Println(query)
+	fmt.Println("query", query)
 
 	// Execute query
 	cursor, err := mongo.Query("transactions", query, filter)
@@ -269,6 +269,8 @@ func (transaction *Transaction) GetTransactionById(accountId string) error {
 		return err
 	}
 
+	fmt.Println("cursor", cursor)
+
 	// Decode query
 	cursor.Next(mongo.GetCtx())
 
@@ -276,6 +278,8 @@ func (transaction *Transaction) GetTransactionById(accountId string) error {
 		log.Printf("Error: Decoding transaction")
 		return err
 	}
+
+	fmt.Println("end")
 
 	return nil
 }

@@ -701,8 +701,8 @@ func (r *queryResolver) TransactionByID(ctx context.Context, id string) (*model.
 	// Iterate for every account
 	for _, account := range accounts {
 		// Get transaction by id
-		fmt.Println(transaction)
-		fmt.Println(account.ID)
+		fmt.Println("transaction", transaction)
+		fmt.Println("account.ID", account.ID)
 		err := transaction.GetTransactionById(account.ID)
 		if err != nil {
 			log.Printf("Error: Get account")
