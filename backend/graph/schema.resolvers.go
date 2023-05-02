@@ -701,17 +701,11 @@ func (r *queryResolver) TransactionByID(ctx context.Context, id string) (*model.
 	// Iterate for every account
 	for _, account := range accounts {
 		// Get transaction by id
-		fmt.Println("transaction", transaction, account.ID)
 		err := transaction.GetTransactionById(account.ID)
 		if err != nil || transaction.Description == "" {
 			log.Printf("Error: Get account")
 			continue
 		}
-
-		fmt.Println("transaction.ID", transaction.ID)
-		fmt.Println("transaction.Description", transaction.Description)
-		fmt.Println("int(transaction.Date.UnixMilli())", int(transaction.Date.UnixMilli()))
-		fmt.Println("transaction.Amount", transaction.Amount)
 
 		// Parse to model.Transaction
 		graphqlTransaction = &model.Transaction{
@@ -725,11 +719,8 @@ func (r *queryResolver) TransactionByID(ctx context.Context, id string) (*model.
 	}
 
 	fmt.Println("Hola")
-	fmt.Println("Hola", graphqlTransaction)
-	fmt.Println("Hola 2", graphqlTransaction.Account)
-	fmt.Println("Hola 3", graphqlTransaction.Account == nil)
 
-	if graphqlTransaction.Account == nil {
+	if graphqlTransaction.Description == "" {
 		log.Printf("Error: Get account")
 		return graphqlTransaction, fmt.Errorf("not found")
 	}
