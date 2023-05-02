@@ -983,10 +983,14 @@ func (r *transactionResolver) Category(ctx context.Context, obj *model.Transacti
 
 	log.Printf("Resolver: Category-Transaction")
 
+	fmt.Println(1)
+
 	if userAuth = middleware.ForContext(ctx); userAuth == nil {
 		log.Printf("Error: Access denied")
 		return &model.Category{}, fmt.Errorf("access denied")
 	}
+
+	fmt.Println(2)
 
 	transaction.ID = obj.ID
 
@@ -997,9 +1001,13 @@ func (r *transactionResolver) Category(ctx context.Context, obj *model.Transacti
 		return &model.Category{}, err
 	}
 
+	fmt.Println(3)
+
 	if transaction.Category == "" {
 		return nil, err
 	}
+
+	fmt.Println(4)
 
 	category.ID = transaction.Category
 
