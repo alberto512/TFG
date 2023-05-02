@@ -992,6 +992,10 @@ func (r *transactionResolver) Category(ctx context.Context, obj *model.Transacti
 
 	fmt.Println(2)
 
+	fmt.Println("2.1", obj)
+
+	fmt.Println("2.2", obj.ID)
+
 	transaction.ID = obj.ID
 
 	fmt.Println(3)
