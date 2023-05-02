@@ -723,8 +723,6 @@ func (r *queryResolver) TransactionByID(ctx context.Context, id string) (*model.
 		Amount:      transaction.Amount,
 	}
 
-	fmt.Println(graphqlTransaction)
-
 	return graphqlTransaction, nil
 }
 
@@ -980,7 +978,7 @@ func (r *queryResolver) TokenWithCode(ctx context.Context, code string) (string,
 // Category is the resolver for the category field.
 func (r *transactionResolver) Category(ctx context.Context, obj *model.Transaction) (*model.Category, error) {
 	var userAuth *users.User
-	var transaction *transactions.Transaction
+	var transaction transactions.Transaction
 	var category *categories.Category
 
 	log.Printf("Resolver: Category-Transaction")
@@ -1017,7 +1015,11 @@ func (r *transactionResolver) Category(ctx context.Context, obj *model.Transacti
 		return nil, err
 	}
 
+	fmt.Println(5)
+
 	category.ID = transaction.Category
+
+	fmt.Println(6)
 
 	err = category.GetCategoryById(userAuth.ID)
 	if err != nil {
