@@ -701,7 +701,7 @@ func (r *queryResolver) TransactionByID(ctx context.Context, id string) (*model.
 	// Iterate for every account
 	for _, account := range accounts {
 		// Get transaction by id
-		fmt.Println("transaction", transaction)
+		fmt.Println("transaction", transaction, account.ID)
 		err := transaction.GetTransactionById(account.ID)
 		if err != nil || transaction.Description == "" {
 			log.Printf("Error: Get account")
@@ -723,6 +723,8 @@ func (r *queryResolver) TransactionByID(ctx context.Context, id string) (*model.
 
 		break
 	}
+
+	fmt.Println("Hola")
 
 	if graphqlTransaction.Account == nil {
 		log.Printf("Error: Get account")
