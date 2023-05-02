@@ -260,6 +260,8 @@ func (transaction *Transaction) GetTransactionById(accountId string) error {
 	// Empty filter
 	filter := bson.D{}
 
+	fmt.Println(query)
+
 	// Execute query
 	cursor, err := mongo.Query("transactions", query, filter)
 	if err != nil {
