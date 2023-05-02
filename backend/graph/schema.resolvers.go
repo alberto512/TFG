@@ -725,6 +725,7 @@ func (r *queryResolver) TransactionByID(ctx context.Context, id string) (*model.
 	}
 
 	fmt.Println("Hola")
+	fmt.Println("Hola", graphqlTransaction)
 
 	if graphqlTransaction.Account == nil {
 		log.Printf("Error: Get account")
