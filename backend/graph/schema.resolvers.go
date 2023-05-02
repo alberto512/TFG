@@ -726,13 +726,12 @@ func (r *queryResolver) TransactionByID(ctx context.Context, id string) (*model.
 
 	fmt.Println("Hola")
 	fmt.Println("Hola", graphqlTransaction)
+	fmt.Println("Hola 2", graphqlTransaction.Account)
 
 	if graphqlTransaction.Account == nil {
 		log.Printf("Error: Get account")
 		return graphqlTransaction, fmt.Errorf("not found")
 	}
-
-	fmt.Println("Hola2222")
 
 	return graphqlTransaction, nil
 }
