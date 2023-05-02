@@ -702,12 +702,13 @@ func (r *queryResolver) TransactionByID(ctx context.Context, id string) (*model.
 	for _, account := range accounts {
 		// Get transaction by id
 		fmt.Println("transaction", transaction)
-		fmt.Println("account.ID", account.ID)
 		err := transaction.GetTransactionById(account.ID)
 		if err != nil {
 			log.Printf("Error: Get account")
 			continue
 		}
+
+		fmt.Println("transaction", transaction)
 
 		// Parse to model.Transaction
 		graphqlTransaction = &model.Transaction{
