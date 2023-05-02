@@ -723,6 +723,8 @@ func (r *queryResolver) TransactionByID(ctx context.Context, id string) (*model.
 		Amount:      transaction.Amount,
 	}
 
+	fmt.Println(graphqlTransaction)
+
 	return graphqlTransaction, nil
 }
 
