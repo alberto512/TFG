@@ -994,6 +994,10 @@ func (r *transactionResolver) Category(ctx context.Context, obj *model.Transacti
 
 	transaction.ID = obj.ID
 
+	fmt.Println(3)
+
+	fmt.Println(transaction)
+
 	// Get transaction in db
 	err := transaction.GetTransactionById("")
 	if err != nil {
@@ -1001,13 +1005,11 @@ func (r *transactionResolver) Category(ctx context.Context, obj *model.Transacti
 		return &model.Category{}, err
 	}
 
-	fmt.Println(3)
+	fmt.Println(4)
 
 	if transaction.Category == "" {
 		return nil, err
 	}
-
-	fmt.Println(4)
 
 	category.ID = transaction.Category
 
