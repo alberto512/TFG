@@ -671,7 +671,6 @@ func (r *queryResolver) TransactionByID(ctx context.Context, id string) (*model.
 	// Set variables
 	var userAuth *users.User
 	var transaction transactions.Transaction
-	var graphqlTransaction *model.Transaction
 	var userId string
 
 	log.Printf("Route: TransactionByID")
@@ -679,7 +678,7 @@ func (r *queryResolver) TransactionByID(ctx context.Context, id string) (*model.
 	// Get user from context
 	if userAuth = middleware.ForContext(ctx); userAuth == nil {
 		log.Printf("Error: Access denied")
-		return graphqlTransaction, fmt.Errorf("access denied")
+		return &model.Transaction{}, fmt.Errorf("access denied")
 	}
 
 	// Set fields. Admin can get any transaction and user can only get his own transactions
@@ -695,7 +694,7 @@ func (r *queryResolver) TransactionByID(ctx context.Context, id string) (*model.
 	accounts, err := accounts.GetAllAccounts(userId)
 	if err != nil {
 		log.Printf("Error: Get all accounts")
-		return graphqlTransaction, err
+		return &model.Transaction{}, err
 	}
 
 	// Iterate for every account
@@ -707,25 +706,22 @@ func (r *queryResolver) TransactionByID(ctx context.Context, id string) (*model.
 			continue
 		}
 
-		// Parse to model.Transaction
-		graphqlTransaction = &model.Transaction{
-			ID:          transaction.ID,
-			Description: transaction.Description,
-			Date:        int(transaction.Date.UnixMilli()),
-			Amount:      transaction.Amount,
-		}
-
 		break
 	}
 
-	fmt.Println("Hola")
-
-	if graphqlTransaction.Description == "" {
+	// Check if transaction exists in one of the accounts
+	if transaction.Description == "" {
 		log.Printf("Error: Get account")
-		return graphqlTransaction, fmt.Errorf("not found")
+		return &model.Transaction{}, fmt.Errorf("not found")
 	}
 
-	fmt.Println("Hola4")
+	// Parse to model.Transaction
+	graphqlTransaction := &model.Transaction{
+		ID:          transaction.ID,
+		Description: transaction.Description,
+		Date:        int(transaction.Date.UnixMilli()),
+		Amount:      transaction.Amount,
+	}
 
 	return graphqlTransaction, nil
 }
