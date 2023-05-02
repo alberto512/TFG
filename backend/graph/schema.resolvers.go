@@ -389,6 +389,65 @@ func (r *mutationResolver) DeleteCategory(ctx context.Context, id string) (strin
 	return "Deletion success", nil
 }
 
+// UpdateTransaction is the resolver for the updateTransaction field.
+func (r *mutationResolver) UpdateTransaction(ctx context.Context, id string, category string) (string, error) {
+	// Set variables
+	var userAuth *users.User
+	var transaction transactions.Transaction
+	var userId string
+
+	log.Printf("Route: TransactionByID")
+
+	// Get user from context
+	if userAuth = middleware.ForContext(ctx); userAuth == nil {
+		log.Printf("Error: Access denied")
+		return "failed", fmt.Errorf("access denied")
+	}
+
+	// Set fields. Admin can get any transaction and user can only get his own transactions
+	if userAuth.Role == model.RoleAdmin {
+		userId = ""
+	} else {
+		userId = userAuth.ID
+	}
+
+	transaction.ID = id
+
+	// Get all accounts of user
+	accounts, err := accounts.GetAllAccounts(userId)
+	if err != nil {
+		log.Printf("Error: Get all accounts")
+		return "failed", err
+	}
+
+	// Iterate for every account
+	for _, account := range accounts {
+		// Get transaction by id
+		err := transaction.GetTransactionById(account.ID)
+		if err != nil || transaction.Description == "" {
+			log.Printf("Error: Get account")
+			continue
+		}
+
+		break
+	}
+
+	// Check if transaction exists in one of the accounts
+	if transaction.Description == "" {
+		log.Printf("Error: Get account")
+		return "failed", fmt.Errorf("not found")
+	}
+
+	// Update transaction
+	err = transaction.Update(transaction.AccountID, nil, nil, nil, &category)
+	if err != nil {
+		log.Printf("Error: Update transaction")
+		return "failed", err
+	}
+
+	return "success", nil
+}
+
 // RefreshBankData is the resolver for the refreshBankData field.
 func (r *mutationResolver) RefreshBankData(ctx context.Context) (string, error) {
 	// Set variables

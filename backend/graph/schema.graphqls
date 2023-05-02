@@ -6,6 +6,7 @@ type Mutation {
   deleteUser(id: ID!): String!
   createCategory(name: String!): Category!
   deleteCategory(id: ID!): String!
+  updateTransaction(id: ID!, category: ID!): String!
   refreshBankData: String!
 }
 

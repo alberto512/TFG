@@ -11,6 +11,7 @@ const EditCategory = () => {
   const backendUrl = process.env.REACT_APP_BACKEND_URL;
   const [transaction, setTransaction] = useState({});
   const [categories, setCategories] = useState([]);
+  const [categorySelected, setCategorySelected] = useState({});
 
   const getTransaction = useCallback(() => {
     const getData = async () => {
@@ -40,6 +41,7 @@ const EditCategory = () => {
       );
 
       setTransaction(response.data.data.transactionById);
+      setCategorySelected(response.data.data.transactionById.category);
     };
 
     getData();
@@ -75,6 +77,10 @@ const EditCategory = () => {
     getCategories();
   }, [getTransaction, getCategories]);
 
+  const saveCategory = (category) => {
+    setCategorySelected(category);
+  };
+
   return (
     <div className='wrapper'>
       {Object.keys(transaction).length === 0 ? (
@@ -84,12 +90,22 @@ const EditCategory = () => {
           <div className='title-transaction-wrapper'>
             <span className='title-transaction'>{transaction.description}</span>
             <span className='category-transaction'>
-              {transaction.category.name}
+              {categorySelected.name == ''
+                ? 'No category'
+                : categorySelected.name}
             </span>
           </div>
           <div className='scroller'>
             {categories.map((category) => (
-              <div key={category.id} className='category-wrapper'>
+              <div
+                key={category.id}
+                className={`category-wrapper ${
+                  category.id === categorySelected.id
+                    ? 'category-wrapper-selected'
+                    : ''
+                }`}
+                onClick={() => saveCategory(category)}
+              >
                 <span className='name-category'>{category.name}</span>
               </div>
             ))}

@@ -70,14 +70,15 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateCategory  func(childComplexity int, name string) int
-		CreateUser      func(childComplexity int, username string, password string, role model.Role) int
-		DeleteCategory  func(childComplexity int, id string) int
-		DeleteUser      func(childComplexity int, id string) int
-		Login           func(childComplexity int, username string, password string) int
-		RefreshBankData func(childComplexity int) int
-		RefreshToken    func(childComplexity int, token string) int
-		UpdatePassword  func(childComplexity int, id string, password string) int
+		CreateCategory    func(childComplexity int, name string) int
+		CreateUser        func(childComplexity int, username string, password string, role model.Role) int
+		DeleteCategory    func(childComplexity int, id string) int
+		DeleteUser        func(childComplexity int, id string) int
+		Login             func(childComplexity int, username string, password string) int
+		RefreshBankData   func(childComplexity int) int
+		RefreshToken      func(childComplexity int, token string) int
+		UpdatePassword    func(childComplexity int, id string, password string) int
+		UpdateTransaction func(childComplexity int, id string, category string) int
 	}
 
 	Query struct {
@@ -127,6 +128,7 @@ type MutationResolver interface {
 	DeleteUser(ctx context.Context, id string) (string, error)
 	CreateCategory(ctx context.Context, name string) (*model.Category, error)
 	DeleteCategory(ctx context.Context, id string) (string, error)
+	UpdateTransaction(ctx context.Context, id string, category string) (string, error)
 	RefreshBankData(ctx context.Context) (string, error)
 }
 type QueryResolver interface {
@@ -342,6 +344,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdatePassword(childComplexity, args["id"].(string), args["password"].(string)), true
+
+	case "Mutation.updateTransaction":
+		if e.complexity.Mutation.UpdateTransaction == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateTransaction_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateTransaction(childComplexity, args["id"].(string), args["category"].(string)), true
 
 	case "Query.accountById":
 		if e.complexity.Query.AccountByID == nil {
@@ -777,6 +791,30 @@ func (ec *executionContext) field_Mutation_updatePassword_args(ctx context.Conte
 		}
 	}
 	args["password"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateTransaction_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["category"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("category"))
+		arg1, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["category"] = arg1
 	return args, nil
 }
 
@@ -1944,6 +1982,60 @@ func (ec *executionContext) fieldContext_Mutation_deleteCategory(ctx context.Con
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_deleteCategory_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateTransaction(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateTransaction(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateTransaction(rctx, fc.Args["id"].(string), fc.Args["category"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateTransaction(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateTransaction_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -5523,6 +5615,12 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_deleteCategory(ctx, field)
+			})
+
+		case "updateTransaction":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateTransaction(ctx, field)
 			})
 
 		case "refreshBankData":
