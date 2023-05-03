@@ -15,12 +15,39 @@ import {
   faXmark,
   faSpinner,
   faPenToSquare,
+  faBowlFood,
+  faHouse,
+  faHeart,
+  faHeartPulse,
+  faCartShopping,
+  faChild,
+  faPlane,
+  faSchool,
+  faSackDollar,
+  faNetworkWired,
 } from '@fortawesome/free-solid-svg-icons';
 import './App.css';
 import Account from 'pages/account/Account';
-import EditCategory from 'pages/editCategory/EditCategory';
+import EditCategory from 'pages/category/EditCategory';
+import Stats from 'pages/stats/Stats';
+import CreateCategory from 'pages/category/CreateCategory';
 
-library.add(faBars, faXmark, faSpinner, faPenToSquare);
+library.add(
+  faBars,
+  faXmark,
+  faSpinner,
+  faPenToSquare,
+  faBowlFood,
+  faHouse,
+  faHeart,
+  faHeartPulse,
+  faCartShopping,
+  faChild,
+  faPlane,
+  faSchool,
+  faSackDollar,
+  faNetworkWired
+);
 
 function App() {
   return (
@@ -49,10 +76,26 @@ function App() {
           }
         />
         <Route
+          path='createCategory'
+          element={
+            <ProtectedRoute>
+              <CreateCategory />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path='editCategory/:id'
           element={
             <ProtectedRoute>
               <EditCategory />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='stats'
+          element={
+            <ProtectedRoute>
+              <Stats />
             </ProtectedRoute>
           }
         />

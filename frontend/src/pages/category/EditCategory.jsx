@@ -3,9 +3,11 @@ import { useParams } from 'react-router';
 import axios from 'axios';
 import { useAuth } from 'components/authProvider/AuthProvider';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useNavigate } from 'react-router-dom';
 import './EditCategory.css';
 
 const EditCategory = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
   const { token } = useAuth();
   const backendUrl = process.env.REACT_APP_BACKEND_URL;
@@ -112,6 +114,12 @@ const EditCategory = () => {
                 ? 'No category'
                 : categorySelected.name}
             </span>
+            <div
+              className='btn-submit'
+              onClick={() => navigate('/createCategory')}
+            >
+              <span>Create category</span>
+            </div>
           </div>
           <div className='scroller'>
             {categories.map((category) => (

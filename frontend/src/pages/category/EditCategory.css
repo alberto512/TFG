@@ -16,13 +16,26 @@
 }
 
 .title-transaction {
-  font-size: 60px;
+  font-size: 40px;
   color: white;
 }
 
 .category-transaction {
-  font-size: 60px;
+  font-size: 40px;
   color: #00ddb2;
+}
+
+.btn-submit {
+  margin-top: 25px !important;
+  width: 250px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 15px;
+  background-color: #00ddb2;
+  font-size: 20px;
+  cursor: pointer;
 }
 
 .scroller {

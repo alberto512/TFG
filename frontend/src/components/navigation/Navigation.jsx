@@ -63,6 +63,13 @@ const Navigation = () => {
               >
                 Accounts
               </NavLink>
+              <NavLink
+                className='nav-link'
+                to='/stats'
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Stats
+              </NavLink>
               <span className='nav-link' onClick={handleLogout}>
                 Sign Out
               </span>
