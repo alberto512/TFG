@@ -31,6 +31,8 @@ import Account from 'pages/account/Account';
 import EditCategory from 'pages/category/EditCategory';
 import Stats from 'pages/stats/Stats';
 import CreateCategory from 'pages/category/CreateCategory';
+import Stats2 from 'pages/stats2/Stats2';
+import Stats3 from 'pages/stats3/Stats3';
 
 library.add(
   faBars,
@@ -96,6 +98,22 @@ function App() {
           element={
             <ProtectedRoute>
               <Stats />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='stats2'
+          element={
+            <ProtectedRoute>
+              <Stats2 />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='stats3'
+          element={
+            <ProtectedRoute>
+              <Stats3 />
             </ProtectedRoute>
           }
         />

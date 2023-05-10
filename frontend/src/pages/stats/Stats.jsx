@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from 'components/authProvider/AuthProvider';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, Legend } from 'recharts';
 import './Stats.css';
 
 const Stats = () => {
@@ -15,8 +15,35 @@ const Stats = () => {
   const [selectedAccounts, setSelectedAccounts] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [error, setError] = useState(false);
-  const [balances, setBalances] = useState([]);
+  const [balancesPositive, setBalancesPositive] = useState([]);
+  const [balancesNegative, setBalancesNegative] = useState([]);
   const [loadingData, setLoadingData] = useState(false);
+
+  const COLORS_NEGATIVE = [
+    '#F1C40F',
+    '#27AE60',
+    '#9B59B6',
+    '#2ECC71',
+    '#8E44AD',
+    '#F44336',
+    '#16A085',
+    '#FF9800',
+    '#2980B9',
+    '#3498DB',
+  ];
+
+  const COLORS_POSITIVE = [
+    '#3366FF',
+    '#FF69B4',
+    '#FF6347',
+    '#FFA07A',
+    '#1E90FF',
+    '#FF5733',
+    '#7B68EE',
+    '#8B008B',
+    '#00FF7F',
+    '#FFD700',
+  ];
 
   const getAcounts = useCallback(() => {
     const getData = async () => {
@@ -123,17 +150,29 @@ const Stats = () => {
       }
     );
 
-    setBalances([]);
+    setBalancesNegative([]);
+    setBalancesPositive([]);
 
     for (const i in response.data.data.balances) {
-      setBalances((prev) => [
-        ...prev,
-        {
-          amount: response.data.data.balances[i].amount,
-          category: response.data.data.balances[i].category.name,
-        },
-      ]);
+      if (response.data.data.balances[i].amount >= 0) {
+        setBalancesPositive((prev) => [
+          ...prev,
+          {
+            amount: response.data.data.balances[i].amount,
+            category: response.data.data.balances[i].category.name,
+          },
+        ]);
+      } else {
+        setBalancesNegative((prev) => [
+          ...prev,
+          {
+            amount: Math.abs(response.data.data.balances[i].amount),
+            category: response.data.data.balances[i].category.name,
+          },
+        ]);
+      }
     }
+
     setLoadingData(false);
   };
 
@@ -147,56 +186,9 @@ const Stats = () => {
     getBalances();
   };
 
-  const renderCustomAxisTick = ({ x, y, payload }) => {
-    let icon = '';
-    switch (payload.value) {
-      case 'Food':
-        icon = 'fa-solid fa-bowl-food';
-        break;
-      case 'Home':
-        icon = 'fa-solid fa-house';
-        break;
-      case 'Lifestyle':
-        icon = 'fa-solid fa-heart';
-        break;
-      case 'Health':
-        icon = 'fa-solid fa-heart-pulse';
-        break;
-      case 'Shopping':
-        icon = 'fa-solid fa-cart-shopping';
-        break;
-      case 'Children':
-        icon = 'fa-solid fa-child';
-        break;
-      case 'Vacation':
-        icon = 'fa-solid fa-plane';
-        break;
-      case 'Education':
-        icon = 'fa-solid fa-school';
-        break;
-      case 'Salary':
-        icon = 'fa-solid fa-sack-dollar';
-        break;
-      default:
-        icon = 'fa-solid fa-network-wired';
-        break;
-    }
-
-    return (
-      <FontAwesomeIcon
-        x={x - 12}
-        y={y + 4}
-        width={24}
-        height={24}
-        icon={icon}
-        className='icon-stats'
-      />
-    );
-  };
-
   return (
     <div className='wrapper'>
-      {balances.length === 0 ? (
+      {balancesPositive.length === 0 && balancesNegative.length === 0 ? (
         <>
           <div className='title-stats-wrapper'>
             <span className='title-stats'>Stats</span>
@@ -272,16 +264,46 @@ const Stats = () => {
         </>
       ) : (
         <div className='charts'>
-          <BarChart width={800} height={800} data={balances}>
-            <XAxis
-              dataKey='category'
-              tick={renderCustomAxisTick}
-              stroke='#8884d8'
-            />
-            <YAxis stroke='#8884d8' />
-            <Tooltip />
-            <Bar dataKey='amount' barSize={30} fill='#8884d8' />
-          </BarChart>
+          {balancesNegative.length !== 0 ? (
+            <div className='chart'>
+              <span className='title-chart'>Negative balances</span>
+              <PieChart width={400} height={400}>
+                <Pie
+                  data={balancesNegative}
+                  dataKey='amount'
+                  nameKey='category'
+                  innerRadius={50}
+                  outerRadius={80}
+                  label
+                >
+                  {balancesNegative.map((_, index) => (
+                    <Cell key={`${index}`} fill={COLORS_NEGATIVE[index % 10]} />
+                  ))}
+                </Pie>
+                <Legend />
+              </PieChart>
+            </div>
+          ) : null}
+          {balancesPositive.length !== 0 ? (
+            <div className='chart'>
+              <span className='title-chart'>Postive balances</span>
+              <PieChart width={400} height={400}>
+                <Pie
+                  data={balancesPositive}
+                  dataKey='amount'
+                  nameKey='category'
+                  innerRadius={50}
+                  outerRadius={80}
+                  label
+                >
+                  {balancesPositive.map((_, index) => (
+                    <Cell key={`${index}`} fill={COLORS_POSITIVE[index % 10]} />
+                  ))}
+                </Pie>
+                <Legend />
+              </PieChart>
+            </div>
+          ) : null}
         </div>
       )}
     </div>

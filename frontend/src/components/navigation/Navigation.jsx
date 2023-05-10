@@ -70,6 +70,20 @@ const Navigation = () => {
               >
                 Stats
               </NavLink>
+              <NavLink
+                className='nav-link'
+                to='/stats2'
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Stats2
+              </NavLink>
+              <NavLink
+                className='nav-link'
+                to='/stats3'
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Stats3
+              </NavLink>
               <span className='nav-link' onClick={handleLogout}>
                 Sign Out
               </span>
