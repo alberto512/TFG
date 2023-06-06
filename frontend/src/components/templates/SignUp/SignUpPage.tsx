@@ -26,7 +26,7 @@ const SignUpPage = () => {
           })
           .then((response) => {
             localStorage.setItem('jwt', response.data);
-            router.push('/accounts');
+            router.push('/banks');
           })
           .catch((error) => {
             console.log(error);
