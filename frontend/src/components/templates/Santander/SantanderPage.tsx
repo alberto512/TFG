@@ -12,9 +12,12 @@ const SantanderPage = () => {
 
   const getToken = () => {
     axios
-      .get('/token')
+      .get('/santander/' + searchParams.get('code') || '', {
+        headers: {
+          Authorization: localStorage.getItem('jwt'),
+        },
+      })
       .then((response) => {
-        console.log(response);
         if (localStorage.getItem('Authorize') === 'true') {
           localStorage.setItem('Authorize', 'false');
           router.push('/accounts');
