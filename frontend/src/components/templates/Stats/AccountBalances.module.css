@@ -1,0 +1,11 @@
+.accountBalances {
+  @apply flex h-full w-full flex-col items-center;
+}
+
+.selectWrapper {
+  @apply w-1/3 pt-6;
+}
+
+.chartWrapper {
+  @apply flex h-full w-full flex-col items-center justify-center;
+}

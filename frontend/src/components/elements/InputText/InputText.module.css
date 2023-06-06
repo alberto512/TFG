@@ -1,0 +1,12 @@
+.inputText {
+  @apply flex h-10 w-full select-none items-center rounded p-4 py-6;
+  background-color: white;
+}
+
+.icon {
+  @apply pointer-events-none;
+}
+
+.input {
+  @apply w-full pl-3 text-xl focus:outline-none;
+}

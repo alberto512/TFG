@@ -139,9 +139,16 @@ func GetTransactionsByCategory(accountId string, category string) ([]Transaction
 
 	log.Printf("Get all transactions by category")
 
+	// String id to ObjectId
+	categoryId, err := primitive.ObjectIDFromHex(category)
+	if err != nil {
+		log.Printf("Error: Convert string to id")
+		return transactions, err
+	}
+
 	// Query to get all transactions by category
 	query := bson.D{
-		{Key: "category", Value: category},
+		{Key: "category", Value: categoryId},
 	}
 
 	if accountId != "" {
@@ -155,7 +162,7 @@ func GetTransactionsByCategory(accountId string, category string) ([]Transaction
 		// Change query to only search the account transactions
 		query = bson.D{
 			{Key: "accountId", Value: id},
-			{Key: "category", Value: category},
+			{Key: "category", Value: categoryId},
 		}
 	}
 
@@ -183,9 +190,16 @@ func GetTransactionsByCategoryAndDate(accountId string, category string, initDat
 
 	log.Printf("Get all transactions by category and date")
 
+	// String id to ObjectId
+	categoryId, err := primitive.ObjectIDFromHex(category)
+	if err != nil {
+		log.Printf("Error: Convert string to id")
+		return transactions, err
+	}
+
 	// Query to get all transactions by category and date
 	query := bson.D{
-		{Key: "category", Value: category},
+		{Key: "category", Value: categoryId},
 		{Key: "date", Value: bson.M{"$gte": initDate}},
 		{Key: "date", Value: bson.M{"$lte": endDate}},
 	}
@@ -201,7 +215,7 @@ func GetTransactionsByCategoryAndDate(accountId string, category string, initDat
 		// Change query to only search the account transactions
 		query = bson.D{
 			{Key: "accountId", Value: id},
-			{Key: "category", Value: category},
+			{Key: "category", Value: categoryId},
 			{Key: "date", Value: bson.M{"$gte": initDate}},
 			{Key: "date", Value: bson.M{"$lte": endDate}},
 		}

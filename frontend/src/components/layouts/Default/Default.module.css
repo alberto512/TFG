@@ -1,0 +1,7 @@
+.default {
+  @apply flex h-full w-full select-none flex-col;
+}
+
+.body {
+  height: 90%;
+}

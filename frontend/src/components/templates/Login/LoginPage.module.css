@@ -1,0 +1,20 @@
+.loginPage {
+  @apply flex h-full w-full;
+}
+
+.imageWrapper {
+  @apply pointer-events-none flex h-full w-1/2 items-center justify-center;
+}
+
+.loginWrapper {
+  @apply flex h-full w-1/2 flex-col items-center justify-center;
+  background-color: var(--light-grey);
+}
+
+.item {
+  @apply flex w-3/4 items-center py-6;
+}
+
+.button {
+  @apply flex w-2/6 items-center;
+}

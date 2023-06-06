@@ -1,0 +1,25 @@
+.header {
+  @apply grid w-full select-none grid-cols-12 items-center gap-6 bg-white px-6 shadow-lg;
+  height: 10%;
+}
+
+.title {
+  @apply col-start-1 col-end-3 text-2xl font-semibold;
+}
+
+.navigator {
+  @apply col-start-4 col-end-10 flex justify-center;
+}
+
+.link {
+  @apply mx-3 cursor-pointer text-xl font-semibold;
+  color: var(--grey);
+}
+
+.link:hover {
+  color: var(--dark-teal);
+}
+
+.selected {
+  color: var(--teal);
+}

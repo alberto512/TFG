@@ -1,0 +1,25 @@
+.inputSelect {
+  @apply relative flex h-8 w-full cursor-pointer select-none items-center rounded;
+  border: 1px solid var(--grey);
+  background-color: white;
+}
+
+.value {
+  @apply w-full px-4 text-base;
+}
+
+.icon {
+  @apply mr-4 rotate-180;
+}
+
+.optionsWrapper {
+  @apply absolute top-full z-10 rounded bg-white shadow-lg;
+  left: -5%;
+  width: 110%;
+  border: 1px solid var(--light-grey);
+}
+
+.option {
+  @apply flex h-10 w-full cursor-pointer items-center justify-between px-4;
+  border-bottom: 1px solid var(--light-grey);
+}

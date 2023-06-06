@@ -1,0 +1,36 @@
+.statsPage {
+  @apply flex h-full w-full flex-col p-6;
+}
+
+.titleWrapper {
+  @apply w-full pt-6;
+  height: 10%;
+}
+
+.title {
+  @apply text-3xl font-semibold;
+}
+
+.body {
+  @apply flex w-full flex-col px-6;
+  height: 90%;
+}
+
+.typeStats {
+  @apply flex w-full items-center justify-center;
+  height: 10%;
+}
+
+.selectWrapper {
+  @apply w-1/3;
+}
+
+.configWrapper {
+  @apply flex w-full items-center justify-around;
+  height: 10%;
+}
+
+.contentWrapper {
+  @apply flex w-full items-center justify-center;
+  height: 80%;
+}

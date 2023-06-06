@@ -1,0 +1,73 @@
+.createModal {
+  @apply absolute z-10 flex w-full items-center justify-center;
+  height: 90%;
+}
+
+.modalWrapper {
+  @apply flex h-1/4 w-1/4 flex-col items-center justify-between rounded p-6 shadow-lg;
+  background-color: var(--light-grey);
+}
+
+.modalTitle {
+  @apply text-xl font-semibold;
+  color: var(--teal);
+}
+
+.categoriesPage {
+  @apply flex h-full w-full flex-col p-6;
+}
+
+.categoriesPageOpacity {
+  @apply opacity-5;
+}
+
+.titleWrapper {
+  @apply w-full pt-6;
+  height: 15%;
+}
+
+.mainTitleWrapper {
+  @apply flex w-full justify-between;
+}
+
+.title {
+  @apply text-3xl font-semibold;
+}
+
+.buttonWrapper {
+  @apply w-1/6;
+}
+
+.keysWrapper {
+  @apply mt-8 grid grid-cols-1 gap-6  pl-6;
+}
+
+.key {
+  @apply text-xl font-medium;
+}
+
+.categoriesWrapper {
+  @apply w-full overflow-auto;
+  height: 85%;
+}
+
+.categoriesWrapper::-webkit-scrollbar {
+  @apply hidden;
+}
+
+.category {
+  @apply mb-6 grid h-14 w-full grid-cols-1 items-center gap-6 rounded bg-white px-6 shadow;
+}
+
+.lastCategory {
+  @apply mb-0;
+}
+
+.item {
+  @apply text-base;
+}
+
+.name {
+  @apply cursor-default select-text font-semibold;
+  color: var(--teal);
+}

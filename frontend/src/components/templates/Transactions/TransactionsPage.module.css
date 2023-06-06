@@ -1,0 +1,55 @@
+.transactionsPage {
+  @apply flex h-full w-full flex-col p-6;
+}
+
+.titleWrapper {
+  @apply w-full pt-6;
+  height: 15%;
+}
+
+.title {
+  @apply text-3xl font-semibold;
+}
+
+.keysWrapper {
+  @apply mt-8 grid grid-cols-4 gap-6 px-6;
+}
+
+.key {
+  @apply cursor-pointer text-xl font-medium;
+}
+
+.transactionsWrapper {
+  @apply w-full overflow-auto;
+  scrollbar-gutter: stable;
+  height: 85%;
+}
+
+.transactionsWrapper::-webkit-scrollbar {
+  @apply hidden;
+}
+
+.transaction {
+  @apply mb-6 grid h-14 w-full grid-cols-4 items-center gap-6 rounded bg-white px-6 shadow;
+}
+
+.lastTransaction {
+  @apply mb-0;
+}
+
+.item {
+  @apply text-base;
+}
+
+.date {
+  @apply cursor-default select-text font-semibold;
+  color: var(--teal);
+}
+
+.positive {
+  @apply text-green-500;
+}
+
+.negative {
+  @apply text-red-500;
+}

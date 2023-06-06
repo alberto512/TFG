@@ -1,0 +1,11 @@
+.categoriesBalances {
+  @apply flex h-full w-full;
+}
+
+.chartWrapper {
+  @apply flex h-full w-full flex-col items-center justify-center;
+}
+
+.label {
+  @apply text-2xl font-semibold;
+}

@@ -1,0 +1,8 @@
+.button {
+  @apply flex h-10 w-full cursor-pointer select-none items-center justify-center rounded;
+  background-color: var(--teal);
+}
+
+.label {
+  @apply text-xl text-white;
+}

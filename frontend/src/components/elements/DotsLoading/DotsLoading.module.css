@@ -1,0 +1,29 @@
+.dotsLoading {
+  @apply flex h-full w-full items-center justify-center;
+}
+
+.dots {
+  @apply flex justify-center;
+  height: 15%;
+}
+
+.dots > div {
+  @apply m-1 h-4 w-4 rounded-full opacity-100;
+  background-color: var(--teal);
+  animation: dots 0.6s infinite alternate;
+}
+
+@keyframes dots {
+  to {
+    opacity: 0.1;
+    transform: translateY(-16px);
+  }
+}
+
+.dots > div:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dots > div:nth-child(3) {
+  animation-delay: 0.4s;
+}
