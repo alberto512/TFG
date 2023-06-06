@@ -12,7 +12,7 @@ const SantanderPage = () => {
 
   const getToken = () => {
     axios
-      .get('/santander/' + searchParams.get('code') || '', {
+      .get('api/santander/' + searchParams.get('code') || '', {
         headers: {
           Authorization: localStorage.getItem('jwt'),
         },
