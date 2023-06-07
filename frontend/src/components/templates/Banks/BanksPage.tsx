@@ -6,7 +6,6 @@ const BanksPage = () => {
   const router = useRouter();
 
   const handleSantanderClick = () => {
-    console.log('Santander');
     router.push('/banks/santander');
   };
 
