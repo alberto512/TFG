@@ -1,3 +1,19 @@
 .banksPage {
-  @apply flex h-full w-full items-center justify-center;
+  @apply flex h-full w-full items-center;
+}
+
+.cardsContainer {
+  @apply grid h-full w-full grid-cols-3 grid-rows-3 gap-4 p-4;
+}
+
+.card {
+  @apply flex cursor-pointer flex-col items-center rounded-lg bg-white p-6 shadow-lg;
+}
+
+.cardCompleted {
+  @apply cursor-default opacity-25;
+}
+
+.imageWrapper {
+  @apply relative h-full w-full;
 }
