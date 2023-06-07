@@ -16,5 +16,7 @@ export async function GET(request: Request, { params }: Props) {
   if (response.data == null) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
+  console.log(response.data);
+  console.log(response.data.tokenWithCode);
   return NextResponse.json(response.data.tokenWithCode);
 }
