@@ -23,27 +23,22 @@ const SantanderPage = () => {
           router.push('/accounts');
         } else {
           localStorage.setItem('Authorize', 'true');
-          const body = {
-            access: {
-              accounts: [],
-              balances: [],
-              transactions: [],
-            },
-            recurringIndicator: true,
-          };
+
           axios
-            .post(process.env.NEXT_PUBLIC_SANTANDER_AUTHORIZE || '', body, {
-              headers: {
-                Authorization: 'Bearer ' + response.data,
-                'content-type': 'application/json',
-                accept: 'application/json',
-              },
-            })
+            .post(
+              '/api/santander',
+              {},
+              {
+                headers: {
+                  Authorization: 'Bearer ' + response.data,
+                  'content-type': 'application/json',
+                  accept: 'application/json',
+                },
+              }
+            )
             .then((_response) => {})
             .catch((error) => {
-              if (error.response.status === 403) {
-                window.location.href = error.response.data.redirect_uri;
-              }
+              console.log(error);
             });
         }
         setIsToken(true);

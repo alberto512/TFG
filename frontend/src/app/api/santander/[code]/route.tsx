@@ -8,11 +8,8 @@ type Props = {
 };
 
 export async function GET(request: Request, { params }: Props) {
-  console.log('GET /api/santander/[code]');
   const token = request.headers.get('authorization') || '';
-  console.log('token', token);
   const response = await tokenCode(token, params.code);
-  console.log('response', response);
   if (response.code === 401) {
     return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
   }

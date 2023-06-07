@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 export const tokenCode = async (token: string, code: string): Promise<{ code: number; data: any }> => {
-  console.log('tokenCode', token, code);
   return await axios
     .post(
       process.env.BACKEND_URL || '',
@@ -21,8 +20,6 @@ export const tokenCode = async (token: string, code: string): Promise<{ code: nu
       }
     )
     .then((response) => {
-      console.log('response', response);
-      console.log('response.data', response.data);
       return { code: 200, data: response.data.data };
     })
     .catch((error) => {
