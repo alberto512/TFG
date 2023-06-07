@@ -21,7 +21,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const redirectUri = "https://tfg-frontend.up.railway.app/santanderLogin/"
+const redirectUri = "https://tfg-frontend.up.railway.app/banks/santander/"
 const endpoint = "https://apis-sandbox.bancosantander.es/canales-digitales/sb/v2/";
 
 const tokenEndpoint = endpoint + "token";
