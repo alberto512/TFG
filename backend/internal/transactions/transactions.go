@@ -29,12 +29,19 @@ func (transaction *Transaction) Create() (error) {
         return err
 	}
 
+	// String category to ObjectId
+	categoryId, err := primitive.ObjectIDFromHex(transaction.Category)
+	if err != nil {
+		log.Printf("Error: Convert string to id")
+        return err
+	}
+
 	// Execute insert
 	res, err := mongo.InsertOne("transactions", bson.D{
 		{Key: "description", Value: transaction.Description},
 		{Key: "date", Value: transaction.Date},
 		{Key: "amount", Value: transaction.Amount},
-		{Key: "category", Value: transaction.Category},
+		{Key: "category", Value: categoryId},
 		{Key: "accountId", Value: id},
 	})
 	if err != nil {
