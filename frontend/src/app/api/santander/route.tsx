@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import axios from 'axios';
 
 export async function POST(request: Request) {
-  console.log(request.headers.get('authorization'));
   const body = {
     access: {
       accounts: [],
@@ -20,8 +19,11 @@ export async function POST(request: Request) {
         accept: 'application/json',
       },
     })
-    .then((_response) => {})
+    .then((_response) => {
+      console.log(_response);
+    })
     .catch((error) => {
+      console.log(error);
       if (error.response.status === 403) {
         return NextResponse.json({ data: error.response.data, status: 403 });
       }
