@@ -38,6 +38,10 @@ const SantanderPage = () => {
             )
             .then((_response) => {})
             .catch((error) => {
+              if (error.response.status === 403) {
+                console.log(error.response);
+                window.location.href = error.response.data.redirect_uri;
+              }
               console.log(error);
             });
         }

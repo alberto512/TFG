@@ -23,9 +23,8 @@ export async function POST(request: Request) {
     .then((_response) => {})
     .catch((error) => {
       if (error.response.status === 403) {
-        window.location.href = error.response.data.redirect_uri;
-      } else {
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+        return NextResponse.json({ data: error.response.data, status: 403 });
       }
+      return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     });
 }
