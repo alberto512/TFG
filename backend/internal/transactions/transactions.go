@@ -29,19 +29,12 @@ func (transaction *Transaction) Create() (error) {
         return err
 	}
 
-	// String category to ObjectId
-	categoryId, err := primitive.ObjectIDFromHex(transaction.Category)
-	if err != nil {
-		log.Printf("Error: Convert string to id")
-        return err
-	}
-
 	// Execute insert
 	res, err := mongo.InsertOne("transactions", bson.D{
 		{Key: "description", Value: transaction.Description},
 		{Key: "date", Value: transaction.Date},
 		{Key: "amount", Value: transaction.Amount},
-		{Key: "category", Value: categoryId},
+		{Key: "category", Value: transaction.Category},
 		{Key: "accountId", Value: id},
 	})
 	if err != nil {
@@ -328,22 +321,41 @@ func (transaction *Transaction) Update(accountId string, description *string, da
 	if amount != nil {
 		transaction.Amount = *amount
 	}
-	if category != nil {
-		transaction.Category = *category
-	}
 
 	// Filter to get user by id
 	filter := bson.D{
 		{Key: "_id", Value: id},
 	}
 
-	// Update fields
-	update := bson.M{
-		"description": transaction.Description,
-		"date": transaction.Date,
-		"amount": transaction.Amount,
-		"category": transaction.Category,
-		"accountId": accountID,
+	var update bson.M
+
+	if category != nil {
+		// String category to ObjectId
+		categoryId, err := primitive.ObjectIDFromHex(*category)
+		if err != nil {
+			log.Printf("Error: Convert string to id")
+			return err
+		}
+
+
+		// Update fields
+		update = bson.M{
+			"description": transaction.Description,
+			"date": transaction.Date,
+			"amount": transaction.Amount,
+			"category": categoryId,
+			"accountId": accountID,
+		}
+
+	} else {
+		// Update fields
+		update = bson.M{
+			"description": transaction.Description,
+			"date": transaction.Date,
+			"amount": transaction.Amount,
+			"category": transaction.Category,
+			"accountId": accountID,
+		}
 	}
 
 	// Execute update
