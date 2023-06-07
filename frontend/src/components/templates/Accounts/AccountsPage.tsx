@@ -9,7 +9,39 @@ const AccountsPage = () => {
   const router = useRouter();
   const [accounts, setAccounts] = useState<Account[]>([]);
 
-  const refreshAccounts = () => {};
+  const refreshAccounts = () => {
+    axios
+      .post('/api/accounts', {
+        headers: {
+          Authorization: localStorage.getItem('jwt'),
+        },
+      })
+      .then((_response) => {
+        axios
+          .get('/api/accounts', {
+            headers: {
+              Authorization: localStorage.getItem('jwt'),
+            },
+          })
+          .then((response) => {
+            setAccounts(response.data);
+          })
+          .catch((error) => {
+            console.log(error);
+            if (error.response.status === 401) {
+              localStorage.removeItem('jwt');
+              router.push('/login');
+            }
+          });
+      })
+      .catch((error) => {
+        console.log(error);
+        if (error.response.status === 401) {
+          localStorage.removeItem('jwt');
+          router.push('/login');
+        }
+      });
+  };
 
   useEffect(() => {
     axios

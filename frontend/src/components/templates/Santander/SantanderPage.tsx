@@ -41,12 +41,20 @@ const SantanderPage = () => {
             })
             .catch((error) => {
               console.log(error);
+              if (error.response.status === 401) {
+                localStorage.removeItem('jwt');
+                router.push('/login');
+              }
             });
         }
         setIsToken(true);
       })
       .catch((error) => {
         console.log(error);
+        if (error.response.status === 401) {
+          localStorage.removeItem('jwt');
+          router.push('/login');
+        }
       });
   };
 
