@@ -9,7 +9,7 @@ const SantanderPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isToken, setIsToken] = useState(false);
-  console.log(searchParams.get('code'));
+
   const getToken = () => {
     axios
       .get('/api/santander/' + searchParams.get('code') || '', {
