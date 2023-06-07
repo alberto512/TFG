@@ -36,7 +36,10 @@ const SantanderPage = () => {
                 },
               }
             )
-            .then((_response) => {})
+            .then((response) => {
+              console.log(response);
+              console.log(response.data);
+            })
             .catch((error) => {
               console.log(error);
               console.log(error.response);
