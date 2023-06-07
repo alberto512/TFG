@@ -37,18 +37,9 @@ const SantanderPage = () => {
               }
             )
             .then((response) => {
-              console.log(response);
-              console.log(response.data);
+              window.location.href = response.data;
             })
             .catch((error) => {
-              console.log(error);
-              console.log(error.response);
-              console.log(error.response.status);
-              console.log(error.response.data);
-              if (error.response.status === 403) {
-                console.log(error.response);
-                window.location.href = error.response.data.redirect_uri;
-              }
               console.log(error);
             });
         }

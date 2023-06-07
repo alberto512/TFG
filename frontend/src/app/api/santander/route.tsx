@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     })
     .catch((error) => {
       if (error.response.status === 403) {
-        return NextResponse.json({ data: error.response.data.redirect_uri, status: 403 });
+        return NextResponse.json(error.response.data.redirect_uri);
       }
       return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     });
