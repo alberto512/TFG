@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 export const refresh = async (token: string): Promise<{ code: number; data: any }> => {
+  console.log(token);
   return await axios
     .post(
       process.env.BACKEND_URL || '',
@@ -31,6 +32,7 @@ export const refresh = async (token: string): Promise<{ code: number; data: any 
 };
 
 export const accounts = async (token: string): Promise<{ code: number; data: any }> => {
+  console.log(token);
   return await axios
     .post(
       process.env.BACKEND_URL || '',
