@@ -23,10 +23,8 @@ export async function POST(request: Request) {
       console.log(_response);
     })
     .catch((error) => {
-      console.log(error.response.status);
-      console.log(error.response.data);
       if (error.response.status === 403) {
-        return NextResponse.json({ data: error.response.data, status: 403 });
+        return NextResponse.json({ data: error.response.data.redirect_uri, status: 403 });
       }
       return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     });
