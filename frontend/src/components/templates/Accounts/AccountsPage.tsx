@@ -11,11 +11,15 @@ const AccountsPage = () => {
 
   const refreshAccounts = () => {
     axios
-      .post('/api/accounts', {
-        headers: {
-          Authorization: localStorage.getItem('jwt'),
-        },
-      })
+      .post(
+        '/api/accounts',
+        {},
+        {
+          headers: {
+            Authorization: localStorage.getItem('jwt'),
+          },
+        }
+      )
       .then((_response) => {
         axios
           .get('/api/accounts', {
