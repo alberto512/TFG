@@ -100,8 +100,8 @@ const StatsPage = () => {
         {
           selectedAccounts: accountsSelected,
           selectedCategories: categoriesSelected,
-          initDate: new Date('2023-01-01').getTime(),
-          endDate: new Date('2023-12-31').getTime(),
+          initDate: new Date('2020-01-01').getTime(),
+          endDate: new Date('2020-12-31').getTime(),
         },
         {
           headers: {
@@ -151,8 +151,8 @@ const StatsPage = () => {
         {
           selectedAccounts: [accountSelected],
           selectedCategories: categories.map((category) => category.id),
-          initDate: new Date('2023-01-01').getTime(),
-          endDate: new Date('2023-12-31').getTime(),
+          initDate: new Date('2020-01-01').getTime(),
+          endDate: new Date('2020-12-31').getTime(),
         },
         {
           headers: {
@@ -256,8 +256,8 @@ const StatsPage = () => {
       })
       .then((response) => {
         const transactions = [];
-        const initDate = new Date('2023-01-01').getTime();
-        const endDate = new Date('2023-12-31').getTime();
+        const initDate = new Date('2020-01-01').getTime();
+        const endDate = new Date('2020-12-31').getTime();
         const interval = Math.floor((endDate - initDate) / 4);
         const dateValues = [initDate, initDate + interval, initDate + interval * 2, initDate + interval * 3, endDate];
 

@@ -1,5 +1,0 @@
-Ampliar con figuras de railway, base de datos mongo, frontend y backend
-
-Dudas:
-Que pasa con las referencias que me hayan servido para algo general pero no hagan referencia a una frase que haya puesto?
-Debería ampliar la información sobre las tecnologías que utilizo?

@@ -89,7 +89,7 @@ for name, index in zip(df['name'].unique(), range(1, names + 1)):
         print('--Account: ', account)
         # Create account
         bodyAccount['iban'] = str(account)
-        amount = random.uniform(-2000, 2000)
+        amount = 2000
         bodyAccount['amount'] = amount
         bodyAccount['userId'] = responseUser.inserted_id
         responseAccount = accounts.insert_one(bodyAccount.copy())
